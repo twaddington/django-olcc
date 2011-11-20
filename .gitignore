@@ -1,0 +1,5 @@
+syntax: glob
+*.swp
+*.pyc
+settings_local.py
+
