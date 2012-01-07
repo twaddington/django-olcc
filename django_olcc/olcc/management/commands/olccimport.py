@@ -31,13 +31,16 @@ class Command(BaseCommand):
 
             # Loop over worksheet
             for rownum in range(sheet.nrows):
+                if rownum < 3:
+                    continue
                 values = sheet.row_values(rownum)
                 if len(values) > 0:
-                    try:
-                        # TODO: Updating products
-                        Product.from_row(values)
-                    except IndexError:
-                        pass
+                    if values[0][0] and values[0][0].isdigit():
+                        try:
+                            # TODO: Updating products
+                            Product.from_row(values)
+                        except IndexError:
+                            pass
         except IOError as (errno, strerror):
             raise CommandError("%s" % strerror)
         except IndexError:

@@ -1,5 +1,5 @@
-syntax: glob
 *.swp
 *.pyc
+.DS_Store
 settings_local.py
-
+sqlite.db
