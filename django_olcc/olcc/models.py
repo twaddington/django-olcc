@@ -1,6 +1,6 @@
 import datetime
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -53,28 +53,45 @@ class Product(models.Model):
         """
         Return the current price of the Product.
         """
-        pass
+        return self.prices.filter(effective_date__lte=datetime.date.today())[:1]
 
     @classmethod
     def from_row(cls, values):
         """
         Create a new Product with a row of data from
         an OLCC price document.
+
         :todo: Handle updating an existing record.
         """
-        # Create new product
-        product = Product()
-        product.code = values[0]
-        product.status = values[1]
-        product.title = cls.format_title(values[2])
-        product.size = values[3]
-        product.bottles_per_case = values[4]
-        product.save()
+        product = None
+        product_code = values[0]
+        if product_code:
+            try:
+                # Update an existing product
+                product = Product.objects.get(code=product_code)
+            except Product.DoesNotExist, IntegrityError:
+                # Create new product
+                product = Product()
+                product.code = product_code
 
-        # Add the product price
-        # TODO: Get the correct effective date
-        ProductPrice.objects.create(amount=values[5],
-                effective_date=datetime.date.today(), product=product)
+            # Set product properties
+            product.status = values[1]
+            product.title = cls.format_title(values[2])
+            product.size = values[3]
+            product.bottles_per_case = values[4]
+            product.save()
+
+            # Get the effective date for the product price
+            today = datetime.date.today()
+            try:
+                next_month = today.replace(month=today.month+1, day=1)
+            except ValueError:
+                if today.month == 12:
+                    next_month = today.replace(year=today.year+1, month=1, day=1)
+
+            # Add the product price
+            ProductPrice.objects.create(amount=str(values[5]),
+                    effective_date=next_month, product=product)
 
         return product
 
@@ -103,6 +120,9 @@ class ProductPrice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True,)
     modified_at = models.DateTimeField(auto_now=True, db_index=True,)
     product = models.ForeignKey(Product, unique=False, related_name="prices")
+
+    class Meta:
+        unique_together = ("product", "effective_date")
 
 class Store(models.Model):
     """
