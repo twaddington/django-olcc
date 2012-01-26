@@ -103,3 +103,16 @@ class ProductPrice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True,)
     modified_at = models.DateTimeField(auto_now=True, db_index=True,)
     product = models.ForeignKey(Product, unique=False, related_name="prices")
+
+class Store(models.Model):
+    """
+    This model represents the physical location of an
+    OLCC run liquor store.
+
+    :todo: Parse hours into a machine readable format.
+    """
+    name = models.CharField(max_length=200, db_index=True)
+    address = models.CharField(max_length=200,)
+    county = models.CharField(max_length=200, db_index=True)
+    phone = models.CharField(max_length=10,)
+    hours = models.CharField(max_length=200,)
