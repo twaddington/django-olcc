@@ -1,0 +1,14 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div id="product">
+        <h2>{{ product.title }}</h2>
+        <dl>
+            <dt>Price:</dt>
+            <dd>{{ product.price }}</dd>
+            <dt>Size:</dt>
+            <dd>{{ product.size }}</dd>
+        </dl>
+    </div>
+{% endblock %}

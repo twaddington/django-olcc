@@ -1,0 +1,10 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <ul>
+    {% for product in page_obj.object_list %}
+        <li><a href="{% url olcc.views.product_detail product.slug %}">{{ product.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
