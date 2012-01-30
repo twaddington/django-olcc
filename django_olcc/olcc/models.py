@@ -17,11 +17,14 @@ class ProductManager(models.Manager):
 class Product(models.Model):
     """
     This model represents a product.
+
+    :todo: Determine a better way to group products, where a product can have
+    multiple sizes and prices per size.
     """
     code = models.CharField(unique=True, max_length=200)
     status = models.CharField(blank=True, default="", max_length=200)
     title = models.CharField(max_length=200, db_index=True,)
-    slug = models.SlugField(max_length=50,)
+    slug = models.SlugField(unique=True, max_length=50,)
     description = models.TextField(blank=True, default="",
             help_text="",)
     size = models.CharField(max_length=10,
@@ -38,7 +41,7 @@ class Product(models.Model):
 
         # Create a slug
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = slugify("%s %s" % (self.title, self.size))
 
         super(Product, self).save(*args, **kwargs)
 
@@ -53,7 +56,11 @@ class Product(models.Model):
         """
         Return the current price of the Product.
         """
-        return self.prices.filter(effective_date__lte=datetime.date.today())[:1]
+        try:
+            return self.prices.filter(effective_date__lte=datetime.date.today())\
+                    .order_by('-effective_date')[:1][0]
+        except IndexError:
+            return None
 
     @classmethod
     def from_row(cls, values):
