@@ -5,12 +5,9 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 class ProductManager(models.Manager):
-    """
-    :todo: Write a method to get products that will be on sale (current price > next price).
-    """
     def on_sale(self):
         """
-        :todo: Implement this method.
+        :todo: Implement this method (current price < previous price).
         """
         return self.get_query_set()
 
@@ -67,8 +64,6 @@ class Product(models.Model):
         """
         Create a new Product with a row of data from
         an OLCC price document.
-
-        :todo: Handle updating an existing record.
         """
         product = None
         product_code = values[0]
