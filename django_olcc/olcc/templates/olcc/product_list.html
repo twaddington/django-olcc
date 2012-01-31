@@ -3,8 +3,29 @@
 
 {% block content %}
     <ul>
-    {% for product in page_obj.object_list %}
-        <li><a href="{% url olcc.views.product_detail product.slug %}">{{ product.title }}</a></li>
+    {% for product in products_page.object_list %}
+        <li>
+            <a href="{% url product_detail product.slug %}">
+                {{ product.title }}
+            </a>
+            <small>({{ product.size }})</small>
+        </li>
     {% endfor %}
     </ul>
+
+    <div class="pagination">
+        {% if products_page.has_previous %}
+            <a href="{% url product_list 1 %}">first</a>
+            <a href="{% url product_list products_page.previous_page_number %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ products_page.number }} of {{ products_page.paginator.num_pages }}
+        </span>
+
+        {% if products_page.has_next %}
+            <a href="{% url product_list products_page.next_page_number %}">next</a>
+            <a href="{% url product_list products_page.paginator.num_pages %}">last</a>
+        {% endif %}
+    </div>
 {% endblock %}

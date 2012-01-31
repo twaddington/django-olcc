@@ -14,12 +14,12 @@ def product_list(request, page=1):
 
     p = Paginator(products, per_page)
     try:
-        page_obj = p.page(page)
+        products_page = p.page(page)
     except InvalidPage:
         raise Http404
     
     context = {
-        'page_obj': page_obj, 
+        'products_page': products_page, 
     }
 
     return render_to_response('olcc/product_list.html',
