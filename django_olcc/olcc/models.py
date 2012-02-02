@@ -1,15 +1,16 @@
 import datetime
 
 from django.db import models, IntegrityError
+from django.db.models import F
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 class ProductManager(models.Manager):
     def on_sale(self):
         """
-        :todo: Implement this method (current price < previous price).
+        Find products whose current_price amount is less than their previous_price amount.
         """
-        return self.get_query_set()
+        return self.get_query_set().filter(current_price__amount__lt=F('previous_price__amount'))
 
 class Product(models.Model):
     """
@@ -27,6 +28,12 @@ class Product(models.Model):
     size = models.CharField(max_length=10,
             help_text="",)
     bottles_per_case = models.PositiveIntegerField()
+
+    current_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
+            blank=True, null=True, help_text="The current price for this Product.",)
+    previous_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
+            blank=True, null=True, help_text="The most recently active price for this Product.",)
+
     created_at = models.DateTimeField(auto_now_add=True, db_index=True,)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
 
@@ -38,7 +45,7 @@ class Product(models.Model):
 
         # Create a slug
         if not self.slug:
-            self.slug = slugify("%s %s" % (self.title, self.size))
+            self.slug = slugify("%s %s" % (self.title, self.code,))
 
         super(Product, self).save(*args, **kwargs)
 
@@ -53,11 +60,7 @@ class Product(models.Model):
         """
         Return the current price of the Product.
         """
-        try:
-            return self.prices.filter(effective_date__lte=datetime.date.today())\
-                    .order_by('-effective_date')[:1][0]
-        except IndexError:
-            return None
+        return self.current_price
 
     @classmethod
     def from_row(cls, values):
@@ -91,9 +94,16 @@ class Product(models.Model):
                 if today.month == 12:
                     next_month = today.replace(year=today.year+1, month=1, day=1)
 
+            # Move the current_price to the previous_price
+            try:
+                product.previous_price = product.current_price
+            except ProductPrice.DoesNotExist:
+                pass
+
             # Add the product price
-            ProductPrice.objects.create(amount=str(values[5]),
+            product.current_price = ProductPrice.objects.create(amount=str(values[5]),
                     effective_date=next_month, product=product)
+            product.save()
 
         return product
 
@@ -125,6 +135,9 @@ class ProductPrice(models.Model):
 
     class Meta:
         unique_together = ("product", "effective_date")
+
+    def __unicode__(self):
+        return u'%d' % (self.amount,)
 
 class Store(models.Model):
     """
