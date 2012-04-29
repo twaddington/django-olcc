@@ -1,5 +1,12 @@
-*.swp
-*.pyc
+# Ignore system files
 .DS_Store
+
+# Ignore editor files
+*.swp
+
+# Ignore compiled code
+*.pyc
+
+# Ignore local configuration
+*.db
 settings_local.py
-sqlite.db
