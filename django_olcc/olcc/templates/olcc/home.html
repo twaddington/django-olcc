@@ -1,0 +1,49 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block content %}
+    <p>
+        Welcome to the future home of Oregon Liquor Prices, the unofficial
+        <abbr title="Oregon Liquor Control Commission">OLCC</abbr>
+        price list!
+    </p>
+
+    <p>
+        Things are a bit hectic around here right now, but
+        check back soon because we've got big things coming.
+    </p>
+
+    <p>
+        The official OLCC product search can be found at
+        <a href="http://oregonliquorsearch.com/">oregonliquorsearch.com</a>.
+    </p>
+
+    <p>
+        Unfortunately the OLCC doesn't offer an API, but they do publish the
+        current month's
+        <a href="http://www.oregon.gov/OLCC/LIQUORSTORES/current_month_productandpricing.shtml">
+            price list</a> on their website.
+    </p>
+
+    <p>
+        A few years ago I hacked together a quick 'n dirty script to
+        import the list and display a crude product search on the web.
+        I always meant to get back to the project and add some awesome
+        new features, but I never did.
+    </p>
+
+    <p>
+        So now I plan to remedy that in the form of a brand-new site
+        featuring all the trendiest web technologies: HTML5, CSS3, AJAX!
+        Then I'll throw in a dash of social media, a pinch of geolocation
+        and serve it all up over the <a href="http://www.heroku.com/">the cloud</a>.
+    </p>
+
+    <p>
+        See you soon!
+    </p>
+{% endblock %}

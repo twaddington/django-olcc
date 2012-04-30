@@ -5,6 +5,14 @@ from django.template import RequestContext
 
 from olcc.models import Product
 
+def home(request):
+    """
+    The site landing page.
+    """
+    context = {}
+    return render_to_response('olcc/home.html',
+            context, context_instance=RequestContext(request))
+
 def product_list(request, page=1):
     """
     Display a paginated list of products.

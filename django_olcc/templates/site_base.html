@@ -9,14 +9,136 @@
         <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
         <meta name="description" content="{% block meta-description %}{% endblock %}">
 
-        <title>{% block title %}{% endblock %}</title>
+        <title>{% block title %}{% endblock %} | Oregon Liquor Prices</title>
         <!-- TODO: Include a shortcut icon. -->
         <!-- TODO: Include an RSS feed for sale items. -->
+
+        <link
+            href="http://fonts.googleapis.com/css?family=Cabin|Lobster"
+            rel="stylesheet" type="text/css" />
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                color: #444;
+                font-size: 20px;
+                font-family: "Cabin", Helvetica, Arial, sans-serif;
+                background-color: #dadfe1;
+            }
+
+            .wrap {
+                width: 760px;
+                margin: auto;
+                overflow: hidden;
+            }
+
+            #header,
+            #content {
+                background-color: #fff;
+            }
+
+            #header,
+            #content,
+            #footer {
+                margin: 0;
+                padding: 20px;
+            }
+
+            #header {
+                color: #146e24;
+            }
+
+            #content {
+                /* stub */
+            }
+
+            #content p {
+                max-width: 55%;
+            }
+
+            #content p:first-child {
+                margin-top: 0;
+            }
+
+            #footer {
+                color: #888;
+                font-size: 65%;
+                text-align: center;
+            }
+
+            h1,h2,h3,h4,h5,h6 {
+                font-family: "Lobster", Georgia, Times, serif;
+            }
+
+            h1 {
+                font-size: 200%;
+                font-weight: normal;
+            }
+
+            h1 span {
+                margin-left: 5px;
+                color: #bcbcbc;
+                font-size: 40%;
+                font-family: monospace;
+            }
+
+            a,
+            a:link,
+            a:visited {
+                color: inherit;
+                text-decoration: underline;
+            }
+
+            a:hover,
+            a:active {
+                text-decoration: none;
+            }
+
+            p {
+                margin: 20px 0;
+            }
+
+            p:first-child {
+                margin-top: 0;
+            }
+        </style>
     </head>
     <body>
+        <div id="header">
+            <div class="wrap">
+                <h1>
+                    Oregon Liquor Prices
+                    <span>The unofficial price list.</span>
+                </h1>
+            </div> 
+        </div>
+
         <div id="content" role="main">
-            <!-- Heart in Oregon green: #146e24 -->
-            {% block content %}{% endblock %}
+            <div class="wrap">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+
+        <div id="footer">
+            <div class="wrap">
+                <p>
+                    Site by <a href="http://www.tristanwaddington.com/">Tristan Waddington</a> |
+                    All data obtained directly from the <a title="Oregon Liquor Control Commission" href="http://www.oregon.gov/OLCC/">OLCC</a>
+                </p>
+
+                <p>
+                    <a href="http://www.djangoproject.com/">
+                        <img
+                            src="http://media.djangoproject.com/img/badges/djangosite100x25.gif"
+                            border="0" alt="A Django site." title="A Django site." />
+                    </a>
+            </div>
         </div>
     </body>
 </html>
