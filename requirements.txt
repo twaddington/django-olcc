@@ -1,4 +1,5 @@
 Django==1.4
 psycopg2==2.4.5
 gunicorn==0.14.2
+requests==0.11.2
 xlrd==0.7.7
