@@ -8,7 +8,7 @@ with the original data set.
 
 The project was born simply because the data existed and was freely
 available. It also helps that the current OLCC price search website is
-pretty terrible.
+pretty unimpressive.
 
 You can view the code running live at [oregonliquorprices.com][project-home].
 
