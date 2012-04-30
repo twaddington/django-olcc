@@ -9,6 +9,7 @@ class ProductImport(models.Model):
     """
     This model represents a product import.
     """
+    url = models.CharField(max_length=255, db_index=True)
     etag = models.CharField(max_length=32,
             help_text="The value of the ETag header returned from the server.")
     local_checksum = models.CharField(max_length=32,

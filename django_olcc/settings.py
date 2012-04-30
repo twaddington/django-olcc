@@ -146,6 +146,9 @@ LOGGING = {
     }
 }
 
+# OLCC Settings
+OLCC_PRICE_LIST_URL = "http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls"
+
 # Import local settings
 try:
     from settings_local import *
