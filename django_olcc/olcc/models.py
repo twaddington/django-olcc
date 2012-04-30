@@ -5,6 +5,17 @@ from django.db.models import F
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+class ProductImport(models.Model):
+    """
+    This model represents a product import.
+    """
+    etag = models.CharField(max_length=32,
+            help_text="The value of the ETag header returned from the server.")
+    local_checksum = models.CharField(max_length=32,
+            help_text="The local md5 hexdigest of the file.")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    modified_at = models.DateTimeField(auto_now=True, db_index=True)
+
 class ProductManager(models.Manager):
     def on_sale(self):
         """
@@ -34,7 +45,7 @@ class Product(models.Model):
     previous_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
             blank=True, null=True, help_text="The most recently active price for this Product.",)
 
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True,)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
 
     objects = ProductManager()
@@ -150,4 +161,4 @@ class Store(models.Model):
     address = models.CharField(max_length=200,)
     county = models.CharField(max_length=200, db_index=True)
     phone = models.CharField(max_length=10,)
-    hours = models.CharField(max_length=200,)
+    hours_raw = models.CharField(max_length=200,)
