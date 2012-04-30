@@ -79,6 +79,8 @@ class Product(models.Model):
         """
         Create a new Product with a row of data from
         an OLCC price document.
+
+        :todo: Effective date for historical price data?
         """
         product = None
         product_code = values[0]

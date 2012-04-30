@@ -12,7 +12,12 @@ class Command(BaseCommand):
     This command parses an Excel spreadsheet containing OLCC product
     and price data and imports it into the database.
 
-    A typical price list can be found here: http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls
+    :todo: Determine spreadsheet type?
+    :todo: Import store data!
+    :todo: Import price data!
+    :todo: Import price history data!
+    :todo: Lock file?
+    :todo: Tests!
     """
     args = "<filename>"
     help = "Parses an excel document of OLCC price data."
@@ -22,8 +27,26 @@ class Command(BaseCommand):
             help='Suppress all output except errors'),
     )
 
+    def import_prices(self, sheet):
+        """
+        Import a list of price and product data from the first
+        sheet in an Excel workbook.
+        """
+        pass
+
+    def import_stores(self, sheet):
+        """
+        Import a list of store data from the first sheet
+        in an Excel workbook.
+        """
+        pass
+
     def handle(self, *args, **options):
         quiet = options.get('quiet', False)
+
+        print "hello!"
+        import sys
+        sys.exit()
 
         # Get our filename
         try:
