@@ -59,8 +59,8 @@ class Command(BaseCommand):
 
             # Get the ETag for the resource
             etag = ""
-            if r.headers.has_key('ETag'):
-                etag = r.headers.get('ETag')
+            if r.headers.has_key('etag'):
+                etag = r.headers.get('etag')
                 etag = etag.strip('"')
             else:
                 print "The server did not include an ETag in the response!"
@@ -78,9 +78,9 @@ class Command(BaseCommand):
                 # Create a temp file
                 fd, path = tempfile.mkstemp()
 
-                with os.fdopen(fd, 'w') as f:
+                with os.fdopen(fd, 'wb') as f:
                     # Write to the temp file
-                    f.write(r.text)
+                    f.write(r.content)
 
                     # Create new import record
                     new_import = ProductImport()

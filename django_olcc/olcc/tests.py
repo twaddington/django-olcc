@@ -19,10 +19,11 @@ class TestFetchCommand(TestCase):
 
         # Configure our Mock HTTP response
         self.mock_head_response = Mock(requests.Response)
-        self.mock_head_response.headers = {'ETag': self.etags[0]}
+        self.mock_head_response.headers = {'etag': self.etags[0]}
 
         self.mock_get_response = Mock(requests.Response)
         self.mock_get_response.text = "baz"
+        self.mock_get_response.content = "baz"
 
     def test_command(self, mock_head, mock_get, mock_command):
         """
@@ -74,7 +75,7 @@ class TestFetchCommand(TestCase):
         record.
         
         We are particular interested in verifying that the command will
-        correctly match ETag values and determine if the remote file
+        correctly match etag values and determine if the remote file
         has changed.
         """
         mock_get.return_value = self.mock_get_response
@@ -85,7 +86,7 @@ class TestFetchCommand(TestCase):
         # Set up our response headers
         etag = self.etags[0]
         mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'ETag': etag})
+        mock_head.return_value.headers.update({'etag': etag})
 
         # Create a new ProductImport record
         pi = ProductImport()
@@ -111,11 +112,11 @@ class TestFetchCommand(TestCase):
         # Ensure our command *did not* call through to 'olccimport'
         self.assertFalse(mock_command.called)
 
-        # Prepare our Mock response object to return a new ETag
+        # Prepare our Mock response object to return a new etag
         etag = self.etags[1]
         mock_head.reset_mock()
         mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'ETag': etag})
+        mock_head.return_value.headers.update({'etag': etag})
 
         # Invoke our management command. We should now expect it
         # to run an import and behave opposite to the previous case.
@@ -139,7 +140,7 @@ class TestFetchCommand(TestCase):
     def test_force(self, mock_head, mock_get, mock_command):
         """
         Verify that the command will run an import when the force
-        flag is set regardless of the ETag returned.
+        flag is set regardless of the etag returned.
         """
         mock_get.return_value = self.mock_get_response
 
@@ -149,7 +150,7 @@ class TestFetchCommand(TestCase):
         # Set up our response headers
         etag = self.etags[0]
         mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'ETag': etag})
+        mock_head.return_value.headers.update({'etag': etag})
 
         # Create a new ProductImport record
         pi = ProductImport()
