@@ -58,8 +58,12 @@ class Command(BaseCommand):
             r = requests.head(url, timeout=5)
 
             # Get the ETag for the resource
-            etag = r.headers.get('etag')
-            etag = etag.strip('"')
+            etag = ""
+            if r.headers.has_key('ETag'):
+                etag = r.headers.get('ETag')
+                etag = etag.strip('"')
+            else:
+                print "The server did not include an ETag in the response!"
 
             # Determine if we should run the import
             should_import = False
@@ -68,12 +72,15 @@ class Command(BaseCommand):
                 should_import = True
 
             if should_import or force:
+                # Get the updated file
+                r = requests.get(url, timeout=5)
+
                 # Create a temp file
                 fd, path = tempfile.mkstemp()
 
                 with os.fdopen(fd, 'w') as f:
                     # Write to the temp file
-                    f.write(r.content)
+                    f.write(r.text)
 
                     # Create new import record
                     new_import = ProductImport()
