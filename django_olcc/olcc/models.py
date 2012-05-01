@@ -159,9 +159,19 @@ class Store(models.Model):
     OLCC run liquor store.
 
     :todo: Parse hours into a machine readable format.
+    :todo: Write a from_row method.
     """
+    key = models.IntegerField(db_index=True)
     name = models.CharField(max_length=200, db_index=True)
     address = models.CharField(max_length=200,)
+    address_raw = models.CharField(max_length=200,)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6,
+            db_index=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6,
+            db_index=True)
     county = models.CharField(max_length=200, db_index=True)
     phone = models.CharField(max_length=10,)
     hours_raw = models.CharField(max_length=200,)
+
+    def __unicode__(self):
+        return u'%s' % (self.name,)
