@@ -88,8 +88,11 @@ class Command(BaseCommand):
                     new_import.etag = etag
                     new_import.save()
 
-                    # Start a new import
-                    call_command('olccimport', path, quiet=self.quiet)
+                # Start a new import. This must be done outside of the
+                # context manager block above, so that the file handle
+                # can be fully closed before 'olccimport' tries to
+                # open a new one.
+                call_command('olccimport', path, quiet=self.quiet)
             else:
                 self.uprint("File not modified, skipping import.")
         except requests.ConnectionError:
