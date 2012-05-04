@@ -1,19 +1,17 @@
 import os
+import time
 import xlrd
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
-
-from olcc.models import Product
+from geopy import geocoders
+from olcc.models import Product, Store
+from optparse import make_option
 
 class Command(BaseCommand):
     """
     This command parses an Excel spreadsheet containing OLCC product
     and price data and imports it into the database.
 
-    :todo: Determine spreadsheet type?
-    :todo: Import store data!
     :todo: Import price data!
     :todo: Import price history data!
     :todo: Lock file?
@@ -23,65 +21,86 @@ class Command(BaseCommand):
     help = "Parses an excel document of OLCC price data."
 
     option_list = BaseCommand.option_list + (
-        make_option('--quiet', action='store_true', dest='quiet', default=False,
-            help='Suppress all output except errors'),
+        make_option('--quiet', action='store_true', dest='quiet',
+            default=False, help='Suppress all output except errors'),
+        make_option('--type', choices=('prices', 'stores',), dest='type',
+            default='prices', help='Suppress all output except errors'),
     )
+
+    def uprint(self, msg):
+        """
+        Unbuffered print.
+        """
+        if not self.quiet:
+            self.stdout.write("%s\n" % msg)
+            self.stdout.flush()
 
     def import_prices(self, sheet):
         """
         Import a list of price and product data from the first
         sheet in an Excel workbook.
         """
-        pass
+        # ...
 
     def import_stores(self, sheet):
         """
         Import a list of store data from the first sheet
         in an Excel workbook.
         """
-        pass
+        # Get our geocoder
+        g = geocoders.Google()
+
+        for n in range(sheet.nrows):
+            values = sheet.row_values(n)
+
+            store_key = values[0]
+            if isinstance(store_key, (int, long, float)):
+                # Create new store instance
+                store = Store.from_row(values)
+
+                try:
+                    # Geocode the store location
+                    address, pos = g.geocode(store.address_raw)
+
+                    store.address = address.strip()
+                    store.latitude = pos[0]
+                    store.longitude = pos[1]
+                    store.save()
+                except ValueError:
+                    # Multiple addresses returned!
+                    self.uprint("Multiple addresses returned for store %s!" % store.key)
+
+                # Some output
+                self.uprint(store)
+
+                # Sleep to prevent hitting the geocoder rate limit
+                time.sleep(.35)
 
     def handle(self, *args, **options):
-        quiet = options.get('quiet', False)
+        self.quiet = options.get('quiet', False)
+        import_type = options.get('type')
 
-        print "hello!"
-        import sys
-        sys.exit()
-
-        # Get our filename
         try:
+            # Get our filename
             filename = args[0]
-            if not os.path.exists(filename):
-                raise CommandError("The file %s does not exist!" % filename)
+
+            # Some output
+            self.uprint("Importing '%s' from: \n\t%s" % (import_type, filename))
+
+            # Import workbook
+            wb = xlrd.open_workbook(filename)
+
+            # Get the first sheet
+            sheet = wb.sheet_by_index(0)
+
+            if import_type == 'stores':
+                self.import_stores(sheet)
+            elif import_type == 'prices':
+                self.import_prices(sheet)
+            else:
+                raise CommandError("Cannot start import of type: '%s'" % import_type)
         except IndexError:
             raise CommandError("You must specify a filename!")
+        except IOError, e:
+            raise CommandError("No such file: '%s'" % e.filename)
 
-        if not quiet:
-            self.stdout.write("Importing prices from %s\n" % filename)
-            self.stdout.flush()
-
-        # Import workbook
-        wb = xlrd.open_workbook(filename)
-
-        # Get the first sheet
-        sheet = wb.sheet_by_index(0)
-
-        # Loop over worksheet
-        count = 0
-        for rownum in range(sheet.nrows):
-            # Get the row
-            values = sheet.row_values(rownum)
-            if len(values) > 0:
-                # Make sure the first column contains a valid product code
-                if values[0] and values[0][0].isdigit():
-                    if not quiet:
-                        self.stdout.write(str(values))
-                        self.stdout.write("\n")
-                        self.stdout.flush()
-
-                    # Import the product and price data
-                    Product.from_row(values)
-                    count += 1
-
-        if not quiet:
-            self.stdout.write("\nImported %d rows of price data\n" % count)

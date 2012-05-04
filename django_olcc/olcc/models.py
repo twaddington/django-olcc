@@ -1,9 +1,18 @@
 import datetime
+import re
 
 from django.db import models, IntegrityError
 from django.db.models import F
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+
+def format_phone(phone):
+    """
+    Sanitize an input string and format the result as a
+    phone number.
+    """
+    phone = re.sub(r'[^0-9]', '', phone)
+    return "(%s) %s-%s" % (phone[:3], phone[3:6], phone[6:])
 
 class ProductImport(models.Model):
     """
@@ -161,17 +170,45 @@ class Store(models.Model):
     :todo: Parse hours into a machine readable format.
     :todo: Write a from_row method.
     """
-    key = models.IntegerField(db_index=True)
+    key = models.IntegerField(unique=True, db_index=True)
     name = models.CharField(max_length=200, db_index=True)
     address = models.CharField(max_length=200,)
     address_raw = models.CharField(max_length=200,)
     latitude = models.DecimalField(max_digits=9, decimal_places=6,
-            db_index=True)
+            blank=True, default=0, db_index=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6,
-            db_index=True)
+            blank=True, default=0, db_index=True)
     county = models.CharField(max_length=200, db_index=True)
-    phone = models.CharField(max_length=10,)
+    phone = models.CharField(max_length=14,)
     hours_raw = models.CharField(max_length=200,)
 
     def __unicode__(self):
-        return u'%s' % (self.name,)
+        return u'[%s] %s' % (self.key, self.address,)
+
+    @classmethod
+    def from_row(cls, values):
+        """
+        Create a new Store object from a row of OLCC store data.
+        """
+        # key, name, phone, address, hours, county
+        store = None
+        store_key = values[0]
+        if store_key:
+            try:
+                # Update an existing store record
+                store = Store.objects.get(key=store_key)
+            except Store.DoesNotExist, IntegrityError:
+                # Create new store
+                store = Store()
+                store.key = int(store_key)
+
+            # Update model
+            store.name = "%s Liquor" % values[1].strip()
+            store.phone = format_phone(values[2].strip())
+            store.address = values[3].strip()
+            store.address_raw = store.address
+            store.hours_raw = values[4].strip()
+            store.county = values[5].strip()
+            store.save()
+
+        return store
