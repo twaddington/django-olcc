@@ -1,12 +1,14 @@
 import requests
+import xlrd
 
 from django.conf import settings
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 
 from mock import Mock, patch
 
-from olcc.models import ProductImport
+from olcc.models import ProductImport, Store
 from olcc.management.commands import olccfetch
 
 @patch('olcc.management.commands.olccfetch.call_command')
@@ -229,5 +231,79 @@ class TestFetchCommand(TestCase):
 
 
 class TestImportCommand(TestCase):
-    def test_smoke(self):
+    def setUp(self):
+        self.stores = [
+            (12345, 'First', '(842) 123-4567', 'Address', 'Hours', 'County'),
+            (54321, 'Second', '(503) 123-4567', 'Address', 'Hours', 'County'),
+            (12321, 'Third', '(541) 123-4567', 'Address', 'Hours', 'County'),
+        ]
+
+    def test_validation(self):
+        """
+        Verify the command throws the proper exceptions when
+        required *args are missing.
+        """
+        # Test missing filename
+        try:
+            print "\nTest Output: Ignore"
+            self.assertRaises(CommandError,
+                    call_command, 'olccimport', quiet=True)
+        except SystemExit:
+            pass
+
+        # Test invalid filename
+        try:
+            print "Test Output: Ignore"
+            self.assertRaises(CommandError,
+                    call_command, 'olccimport', '/foo/bar/baz.xls', quiet=True)
+        except SystemExit:
+            pass
+
+    @patch.object(xlrd, 'open_workbook')
+    def test_import_stores(self, mock_open_workbook):
+        """
+        Test a basic stores file import.
+        """
+        # Configure our Mocks
+        sheet_mock = Mock()
+        sheet_mock.nrows = len(self.stores)
+        sheet_mock.row_values = Mock(side_effect=self.stores)
+
+        wb_mock = Mock(return_value=sheet_mock)
+        wb_mock.sheet_by_index = Mock(return_value=sheet_mock)
+
+        mock_open_workbook.return_value = wb_mock
+
+        # Sanity check
+        self.assertEqual(Store.objects.count(), 0)
+
+        # Call our management command
+        path = '/foo/bar/baz.xml'
+        call_command('olccimport', path, quiet=True, import_type='stores',
+                geocode=False)
+
+        # Verify open_workbook was called correctly
+        self.assertTrue(mock_open_workbook.called)
+        self.assertEqual(mock_open_workbook.call_count, 1)
+        self.assertEqual(mock_open_workbook.call_args[0][0], path)
+
+        # Verify the expected number of Store objects were created
+        stores = Store.objects.all()
+        self.assertEqual(stores.count(), len(self.stores))
+
+        # Verify the store data
+        i = 0
+        for s in stores:
+            self.assertEqual(self.stores[i][0], s.key)
+            self.assertEqual(self.stores[i][1], s.name.split()[0])
+            self.assertEqual(self.stores[i][2], s.phone)
+            self.assertEqual(self.stores[i][3], s.address)
+            self.assertEqual(self.stores[i][4], s.hours_raw)
+            self.assertEqual(self.stores[i][5], s.county)
+            self.assertEqual(s.address, s.address_raw)
+            i += 1
+
+    def test_import_prices(self):
+        """
+        """
         pass
