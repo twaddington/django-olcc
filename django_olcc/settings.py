@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'olcc',
     'gunicorn',
+    'raven.contrib.django',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -146,8 +147,13 @@ LOGGING = {
     }
 }
 
+# Set your DSN value
+SENTRY_DSN = \
+        'https://4e87c09aea21444aa2104de70b92c670:1a5ca3c148eb4ccda60ccc3c359a5fe9@app.getsentry.com/728'
+
 # OLCC Settings
-OLCC_PRICE_LIST_URL = "http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls"
+OLCC_PRICE_LIST_URL = \
+        "http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls"
 
 # Import local settings
 try:
