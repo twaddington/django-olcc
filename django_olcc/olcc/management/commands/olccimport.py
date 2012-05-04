@@ -23,8 +23,10 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--quiet', action='store_true', dest='quiet',
             default=False, help='Suppress all output except errors'),
-        make_option('--type', choices=('prices', 'stores',), dest='type',
+        make_option('--import-type', choices=('prices', 'stores',), dest='import_type',
             default='prices', help='Suppress all output except errors'),
+        make_option('--geocode', action='store_true', dest='geocode',
+            default=True, help='Geocode store addresses')
     )
 
     def uprint(self, msg):
@@ -58,27 +60,28 @@ class Command(BaseCommand):
                 # Create new store instance
                 store = Store.from_row(values)
 
-                try:
-                    # Geocode the store location
-                    address, pos = g.geocode(store.address_raw)
+                if self.geocode:
+                    try:
+                        # Geocode the store location
+                        address, pos = g.geocode(store.address_raw)
 
-                    store.address = address.strip()
-                    store.latitude = pos[0]
-                    store.longitude = pos[1]
-                    store.save()
-                except ValueError:
-                    # Multiple addresses returned!
-                    self.uprint("Multiple addresses returned for store %s!" % store.key)
+                        store.address = address.strip()
+                        store.latitude = pos[0]
+                        store.longitude = pos[1]
+                        store.save()
+                    except ValueError:
+                        print "Multiple addresses returned for store %s!" % store.key
+
+                    # Sleep to prevent hitting the geocoder rate limit
+                    time.sleep(.35)
 
                 # Some output
                 self.uprint(store)
 
-                # Sleep to prevent hitting the geocoder rate limit
-                time.sleep(.35)
-
     def handle(self, *args, **options):
         self.quiet = options.get('quiet', False)
-        import_type = options.get('type')
+        self.geocode = options.get('geocode', True)
+        import_type = options.get('import_type')
 
         try:
             # Get our filename
