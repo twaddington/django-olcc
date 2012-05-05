@@ -9,4 +9,5 @@
 
 # Ignore local configuration
 *.db
+*.db-journal
 settings_local.py

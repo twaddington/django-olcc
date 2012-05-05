@@ -4,7 +4,7 @@ import time
 import xlrd
 
 from django.core.management.base import BaseCommand, CommandError
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from geopy import geocoders
 from olcc.models import Product, ProductPrice, Store
 from optparse import make_option
@@ -15,11 +15,6 @@ class Command(BaseCommand):
     """
     This command parses an Excel spreadsheet containing OLCC product
     and price data and imports it into the database.
-
-    :todo: Import price data!
-    :todo: Import price history data!
-    :todo: Lock file?
-    :todo: Tests!
     """
     args = "<filename>"
     help = "Parses an excel document of OLCC price data."
@@ -42,6 +37,7 @@ class Command(BaseCommand):
             self.stdout.write("%s\n" % msg)
             self.stdout.flush()
 
+    @transaction.commit_on_success
     def product_from_row(self, row):
         """
         Import a row of product price data as a new product record. This method
@@ -52,26 +48,28 @@ class Command(BaseCommand):
         :return: A Product instance or None.
         """
         if Product.is_code_valid(row.get('code')):
-            product, _ = Product.objects.get_or_create(code=row.get('code'))
-            product.title = row.get('title')
+            product, created = Product.objects.get_or_create(code=row.get('code'))
 
-            # Update our product
-            if row.get('status'):
-                product.status = row.get('status')
-            if row.get('size'):
-                product.size = row.get('size')
-            if row.get('per_case'):
-                product.bottles_per_case = int(float(row.get('per_case')))
-            if row.get('proof'):
-                product.proof = row.get('proof')
-            if row.get('age'):
-                if row.get('age_unit') == 'M':
-                    product.age = int(float(row.get('age'))) / 12
-                else:
-                    product.age = row.get('age')
+            if created or not self.import_type == 'price_history':
+                product.title = row.get('title')
 
-            # Persist our updates
-            product.save()
+                # Update our product
+                if row.get('status'):
+                    product.status = row.get('status')
+                if row.get('size'):
+                    product.size = row.get('size')
+                if row.get('per_case'):
+                    product.bottles_per_case = int(float(row.get('per_case')))
+                if row.get('proof'):
+                    product.proof = row.get('proof')
+                if row.get('age'):
+                    if row.get('age_unit') == 'M':
+                        product.age = int(float(row.get('age'))) / 12
+                    else:
+                        product.age = row.get('age')
+
+                # Persist our updates
+                product.save()
 
             # Get the effective date for the product price
             today = datetime.date.today()
@@ -208,7 +206,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.quiet = options.get('quiet', False)
         self.geocode = options.get('geocode', True)
-        import_type = options.get('import_type')
+        self.import_type = options.get('import_type')
 
         try:
             # Get our filename
@@ -216,9 +214,9 @@ class Command(BaseCommand):
 
             try:
                 # Get our import method
-                import_method = getattr(self, 'import_%s' % import_type)
+                import_method = getattr(self, 'import_%s' % self.import_type)
             except AttributeError:
-                raise CommandError("Import type '%s' not implemented!" % import_type)
+                raise CommandError("Import type '%s' not implemented!" % self.import_type)
 
             # Import workbook
             wb = xlrd.open_workbook(filename)
@@ -227,7 +225,7 @@ class Command(BaseCommand):
             sheet = wb.sheet_by_index(0)
 
             # Start the import
-            self.uprint("Importing '%s' from: \n\t%s" % (import_type, filename))
+            self.uprint("Importing '%s' from: \n\t%s" % (self.import_type, filename))
             import_method(sheet)
         except IndexError:
             raise CommandError("You must specify a filename!")
