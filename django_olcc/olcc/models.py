@@ -41,14 +41,16 @@ class Product(models.Model):
     multiple sizes and prices per size.
     """
     code = models.CharField(unique=True, max_length=200)
-    status = models.CharField(blank=True, default="", max_length=200)
-    title = models.CharField(max_length=200, db_index=True,)
     slug = models.SlugField(unique=True, max_length=50,)
-    description = models.TextField(blank=True, default="",
-            help_text="",)
-    size = models.CharField(max_length=10,
-            help_text="",)
-    bottles_per_case = models.PositiveIntegerField()
+    title = models.CharField(max_length=200, db_index=True,)
+
+    status = models.CharField(blank=True, default="", max_length=200)
+    description = models.TextField(blank=True, default="",)
+    size = models.CharField(blank=True, max_length=10, default="",
+            help_text="Bottle size",)
+    bottles_per_case = models.PositiveIntegerField(blank=True,)
+    proof = models.DecimalField(blank=True, max_digits=4, decimal_places=2,)
+    age = models.IntegerField(blank=True, help_text="Age in years",)
 
     current_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
             blank=True, null=True, help_text="The current price for this Product.",)
@@ -62,7 +64,7 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         # Sanitize the title
-        self.title = self.title.strip()
+        self.title = self.format_title(self.title)
 
         # Create a slug
         if not self.slug:
@@ -82,53 +84,6 @@ class Product(models.Model):
         Return the current price of the Product.
         """
         return self.current_price
-
-    @classmethod
-    def from_row(cls, values):
-        """
-        Create a new Product with a row of data from
-        an OLCC price document.
-
-        :todo: Effective date for historical price data?
-        """
-        product = None
-        product_code = values[0]
-        if product_code:
-            try:
-                # Update an existing product
-                product = Product.objects.get(code=product_code)
-            except Product.DoesNotExist, IntegrityError:
-                # Create new product
-                product = Product()
-                product.code = product_code
-
-            # Set product properties
-            product.status = values[1]
-            product.title = cls.format_title(values[2])
-            product.size = values[3]
-            product.bottles_per_case = values[4]
-            product.save()
-
-            # Get the effective date for the product price
-            today = datetime.date.today()
-            try:
-                next_month = today.replace(month=today.month+1, day=1)
-            except ValueError:
-                if today.month == 12:
-                    next_month = today.replace(year=today.year+1, month=1, day=1)
-
-            # Move the current_price to the previous_price
-            try:
-                product.previous_price = product.current_price
-            except ProductPrice.DoesNotExist:
-                pass
-
-            # Add the product price
-            product.current_price = ProductPrice.objects.create(amount=str(values[5]),
-                    effective_date=next_month, product=product)
-            product.save()
-
-        return product
 
     @classmethod
     def format_title(cls, title):
