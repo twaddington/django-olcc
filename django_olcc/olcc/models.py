@@ -1,4 +1,3 @@
-import datetime
 import re
 
 from django.db import models, IntegrityError
@@ -48,9 +47,11 @@ class Product(models.Model):
     description = models.TextField(blank=True, default="",)
     size = models.CharField(blank=True, max_length=10, default="",
             help_text="Bottle size",)
-    bottles_per_case = models.PositiveIntegerField(blank=True,)
-    proof = models.DecimalField(blank=True, max_digits=4, decimal_places=2,)
-    age = models.IntegerField(blank=True, help_text="Age in years",)
+    bottles_per_case = models.PositiveIntegerField(blank=True, default=0)
+    proof = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
+            default=0)
+    age = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
+            default=0, help_text="Age in years",)
 
     current_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
             blank=True, null=True, help_text="The current price for this Product.",)
@@ -91,6 +92,15 @@ class Product(models.Model):
         Format the product title.
         """
         return " ".join([word.capitalize() for word in title.split()])
+
+    @classmethod
+    def is_code_valid(cls, code):
+        """
+        Validate a product code.
+        :return: A regular expression Match object if valid; otherwise None.
+        """
+        return re.match(r'\d{4,5}\w', code)
+
 
 class ProductImage(models.Model):
     """
