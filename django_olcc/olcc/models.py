@@ -53,7 +53,7 @@ class Product(models.Model):
     age = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
             default=0, help_text="Age in years",)
 
-    next_price = models.ForeignKey('ProductPrice', relatd_name='+', unique=False,
+    next_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
             blank=True, null=True, help_text="The upcoming price for this Product.",)
     current_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
             blank=True, null=True, help_text="The current price for this Product.",)
