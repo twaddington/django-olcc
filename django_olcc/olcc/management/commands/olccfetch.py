@@ -9,6 +9,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 from olcc.models import ProductImport
+from olcc.management.commands.olccimport import IMPORT_TYPES
 
 class Command(BaseCommand):
     help = """\
@@ -25,6 +26,9 @@ class Command(BaseCommand):
             default=False, help='Ignore any ETag and force the import.'),
         make_option('--url', action='store', type='string', dest='url',
             help='The URL from where to fetch the file.'),
+        make_option('--import-type', choices=IMPORT_TYPES,
+            dest='import_type', default='prices',
+            help='One of the following: %s' % (', '.join(IMPORT_TYPES),)),
     )
 
     def uprint(self, msg):
@@ -39,6 +43,7 @@ class Command(BaseCommand):
         self.quiet = options.get('quiet', False)
         force = options.get('force', False)
         url = options.get('url')
+        import_type = options.get('import_type')
 
         if not url:
             # Get default URL from settings!
@@ -92,7 +97,8 @@ class Command(BaseCommand):
                 # context manager block above, so that the file handle
                 # can be fully closed before 'olccimport' tries to
                 # open a new one.
-                call_command('olccimport', path, quiet=self.quiet)
+                call_command('olccimport', path, import_type=import_type,
+                        quiet=self.quiet)
             else:
                 self.uprint("File not modified, skipping import.")
         except requests.ConnectionError:
