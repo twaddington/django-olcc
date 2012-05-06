@@ -1,3 +1,4 @@
+import datetime
 import re
 
 from django.db import models, IntegrityError
@@ -28,9 +29,9 @@ class ProductImport(models.Model):
 class ProductManager(models.Manager):
     def on_sale(self):
         """
-        Find products whose current_price amount is less than their previous_price amount.
+        Find all products that have dropped in price since last month.
         """
-        return self.get_query_set().filter(current_price__amount__lt=F('previous_price__amount'))
+        return self.get_query_set().filter(on_sale=True)
 
 class Product(models.Model):
     """
@@ -42,6 +43,7 @@ class Product(models.Model):
     code = models.CharField(unique=True, max_length=200)
     slug = models.SlugField(unique=True, max_length=50,)
     title = models.CharField(max_length=200, db_index=True,)
+    on_sale = models.BooleanField(default=False, db_index=True,)
 
     status = models.CharField(blank=True, default="", max_length=200)
     description = models.TextField(blank=True, default="",)
@@ -52,13 +54,6 @@ class Product(models.Model):
             default=0)
     age = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
             default=0, help_text="Age in years",)
-
-    next_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
-            blank=True, null=True, help_text="The upcoming price for this Product.",)
-    current_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
-            blank=True, null=True, help_text="The current price for this Product.",)
-    previous_price = models.ForeignKey('ProductPrice', related_name='+', unique=False,
-            blank=True, null=True, help_text="The most recently active price for this Product.",)
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
@@ -84,9 +79,28 @@ class Product(models.Model):
     @property
     def price(self):
         """
-        Return the current price of the Product.
+        Return the current price for this Product.
         """
-        return self.current_price
+        today = datetime.date.today()
+        this_month = today.replace(day=1)
+
+        return self.prices.get(effective_date=this_month)
+
+    @property
+    def previous_price(self):
+        """
+        Return last month's price for this Product.
+        """
+        today = datetime.date.today()
+
+        # Get the first of last month
+        try:
+            last_month = today.replace(month=today.month-1, day=1)
+        except ValueError:
+            if today.month == 1:
+                last_month = today.replace(year=today.year-1, month=12, day=1)
+
+        return self.prices.get(effective_date=last_month)
 
     @classmethod
     def format_title(cls, title):
