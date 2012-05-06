@@ -69,7 +69,7 @@ class Product(models.Model):
 
         # Create a slug
         if not self.slug:
-            self.slug = slugify("%s %s" % (self.title, self.code,))
+            self.slug = slugify(self.code)
 
         super(Product, self).save(*args, **kwargs)
 
