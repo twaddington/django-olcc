@@ -50,8 +50,6 @@ class Command(BaseCommand):
             url = getattr(settings, 'OLCC_PRICE_LIST_URL')
 
         try:
-            self.uprint('Starting import from:\n\t"%s"' % url)
-
             previous_import = None
             try:
                 previous_import = ProductImport.objects.filter(\
@@ -77,6 +75,8 @@ class Command(BaseCommand):
                 should_import = True
 
             if should_import or force:
+                self.uprint('Starting import from:\n\t"%s"' % url)
+
                 # Get the updated file
                 r = requests.get(url, timeout=5)
 
@@ -101,6 +101,8 @@ class Command(BaseCommand):
                         quiet=self.quiet)
             else:
                 self.uprint("File not modified, skipping import.")
+        except requests.exceptions.MissingSchema:
+            print "Request failed! Invalid URL."
         except requests.ConnectionError:
             print "Request failed! ConnectionError."
         except requests.HTTPError:
