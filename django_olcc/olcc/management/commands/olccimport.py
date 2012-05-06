@@ -45,8 +45,12 @@ class Command(BaseCommand):
         list file.
 
         :param row: A dict of keys mapped to row values.
-        :return: A Product instance or None.
+        :return: A tuple containing a Product instance and a boolean indicating
+                 if the Product record was newly created.
         """
+        product = None
+        created = False
+
         if Product.is_code_valid(row.get('code')):
             product, created = Product.objects.get_or_create(code=row.get('code'))
 
@@ -71,7 +75,7 @@ class Command(BaseCommand):
                 # Persist our updates
                 product.save()
 
-            # Get the effective date for the product price
+            # Get the effective date for the new product price
             today = datetime.date.today()
 
             if row.get('year') and row.get('month'):
@@ -87,22 +91,14 @@ class Command(BaseCommand):
                 # Effective date is next month
                 price_date = next_month
 
-            # Move the current price to the previous price field
+            # Create the new price record
             try:
-                product.previous_price = product.current_price
-            except ProductPrice.DoesNotExist:
-                pass
-
-            # Update the current price
-            try:
-                product.current_price = ProductPrice.objects.create(\
-                        amount=str(row.get('price')), effective_date=price_date,
-                        product=product)
+                ProductPrice.objects.create(amount=str(row.get('price')),
+                        effective_date=price_date, product=product)
             except IntegrityError:
                 pass
 
-            product.save()
-            return product
+        return (product, created)
 
     def import_prices(self, sheet):
         """
@@ -123,7 +119,7 @@ class Command(BaseCommand):
 
             # Import our product
             try:
-                product = self.product_from_row(obj)
+                product, created = self.product_from_row(obj)
 
                 if product:
                     count += 1
@@ -156,7 +152,7 @@ class Command(BaseCommand):
 
             # Import our product
             try:
-                product = self.product_from_row(obj)
+                product, created = self.product_from_row(obj)
 
                 if product:
                     count += 1
