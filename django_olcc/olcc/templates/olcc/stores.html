@@ -1,0 +1,39 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}
+    Stores
+{% endblock %}
+
+{% block content %}
+    {% for store in store_page.object_list %}
+        <div class="store">
+            {{ store.name }}<br />
+            {{ store.address }}<br />
+            <a href="//maps.google.com/?q={{ store.address|urlencode }}@{{ store.latitude }},{{ store.longitude }}">
+                <img
+                    width="400"
+                    height=250"
+                    src="//maps.googleapis.com/maps/api/staticmap?size=400x250&sensor=false&region=us&markers={{ store.address|urlencode }}" />
+            </a>
+        </div>
+    {% empty %}
+        <p>No stores found!</p>
+    {% endfor %}
+
+    <div class="pagination">
+        {% if store_page.has_previous %}
+            <a href="{% url stores 1 %}">first</a>
+            <a href="{% url stores store_page.previous_page_number %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ store_page.number }} of {{ store_page.paginator.num_pages }}
+        </span>
+
+        {% if store_page.has_next %}
+            <a href="{% url stores store_page.next_page_number %}">next</a>
+            <a href="{% url stores store_page.paginator.num_pages %}">last</a>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -5,7 +5,7 @@
     <ul>
     {% for product in products_page.object_list %}
         <li>
-            <a href="{% url product_detail product.slug %}">
+            <a href="{% url product product.slug %}">
                 {{ product.title }}
             </a>
             <small>({{ product.size }})</small>
@@ -15,8 +15,8 @@
 
     <div class="pagination">
         {% if products_page.has_previous %}
-            <a href="{% url product_list 1 %}">first</a>
-            <a href="{% url product_list products_page.previous_page_number %}">previous</a>
+            <a href="{% url products 1 %}">first</a>
+            <a href="{% url products products_page.previous_page_number %}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -24,8 +24,8 @@
         </span>
 
         {% if products_page.has_next %}
-            <a href="{% url product_list products_page.next_page_number %}">next</a>
-            <a href="{% url product_list products_page.paginator.num_pages %}">last</a>
+            <a href="{% url products products_page.next_page_number %}">next</a>
+            <a href="{% url products products_page.paginator.num_pages %}">last</a>
         {% endif %}
     </div>
 {% endblock %}
