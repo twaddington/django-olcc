@@ -125,7 +125,7 @@ class ProductImage(models.Model):
     url = models.CharField(max_length=200,)
     created_at = models.DateTimeField(auto_now_add=True,)
     modified_at = models.DateTimeField(auto_now=True,)
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, related_name='images')
 
 class ProductPrice(models.Model):
     """
@@ -147,9 +147,6 @@ class Store(models.Model):
     """
     This model represents the physical location of an
     OLCC run liquor store.
-
-    :todo: Parse hours into a machine readable format.
-    :todo: Write a from_row method.
     """
     key = models.IntegerField(unique=True, db_index=True)
     name = models.CharField(max_length=200, db_index=True)
@@ -165,6 +162,13 @@ class Store(models.Model):
 
     def __unicode__(self):
         return u'[%s] %s' % (self.key, self.address,)
+
+    def tel(self):
+        """
+        Return the phone number as an RFC 3966 formatted string.
+        """
+        p = re.sub(r'[^0-9]', '', self.phone)
+        return "+1-%s-%s-%s" % (p[:3], p[3:6], p[6:])
 
     @classmethod
     def from_row(cls, values):
