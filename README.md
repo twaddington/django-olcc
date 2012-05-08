@@ -21,6 +21,8 @@ submitting a patch.
 
 ## Potential Features
 
+- Parse the store hours into a machine readable format. Display stores as
+  currently open/closed.
 - Product images: Scrape Creative Commons licensed photos or accept submissions.
 - Price monitoring: Get notified when your favorite item drops in price.
 - Price intelligence: Analyze historical price changes to predict future sales.
