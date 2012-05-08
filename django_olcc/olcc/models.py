@@ -38,7 +38,7 @@ class Product(models.Model):
     This model represents a product.
 
     :todo: Determine a better way to group products, where a product can have
-    multiple sizes and prices per size.
+           multiple sizes and prices per size.
     """
     code = models.CharField(unique=True, max_length=200)
     slug = models.SlugField(unique=True, max_length=50,)
@@ -73,8 +73,9 @@ class Product(models.Model):
     def __unicode__(self):
         return u'{title} ({size})'.format(title=self.title, size=self.size,)
 
+    @models.permalink
     def get_absolute_url(self):
-        pass
+        return ('olcc.views.product_view', (), {'slug': self.slug})
 
     @property
     def price(self):
