@@ -1,6 +1,10 @@
 {% extends 'site_base.html' %}
 {% load i18n %}
 
+{% block title %}
+    {{ product.title }}
+{% endblock %}
+
 {% block content %}
     <div id="product">
         <h2>{{ product.title }}</h2>
