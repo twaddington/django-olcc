@@ -8,7 +8,7 @@ from django.test import TestCase
 
 from mock import Mock, patch
 
-from olcc.models import ProductImport, Store
+from olcc.models import ImportRecord, Store
 from olcc.management.commands import olccfetch
 
 @patch('olcc.management.commands.olccfetch.call_command')
@@ -29,13 +29,13 @@ class TestFetchCommand(TestCase):
 
     def test_command(self, mock_head, mock_get, mock_command):
         """
-        Test the command when there is no pre-existing ProductImport
+        Test the command when there is no pre-existing ImportRecord
         records found.
         """
         mock_get.return_value = self.mock_get_response
 
         # Sanity check
-        self.assertEqual(ProductImport.objects.count(), 0)
+        self.assertEqual(ImportRecord.objects.count(), 0)
         
         # Invoke our management command
         call_command('olccfetch', quiet=True)
@@ -67,13 +67,13 @@ class TestFetchCommand(TestCase):
             self.assertEqual(f.read(), self.mock_get_response.text)
 
         # Verify that a product import record was created
-        pi = ProductImport.objects.all()
+        pi = ImportRecord.objects.all()
         self.assertEqual(pi.count(), 1)
         self.assertEqual(pi[0].url, self.default_url)
 
     def test_command_etag(self, mock_head, mock_get, mock_command):
         """
-        Test the command when there is an existing ProductImport
+        Test the command when there is an existing ImportRecord
         record.
         
         We are particular interested in verifying that the command will
@@ -83,15 +83,15 @@ class TestFetchCommand(TestCase):
         mock_get.return_value = self.mock_get_response
 
         # Sanity check
-        self.assertEqual(ProductImport.objects.count(), 0)
+        self.assertEqual(ImportRecord.objects.count(), 0)
 
         # Set up our response headers
         etag = self.etags[0]
         mock_head.return_value = self.mock_head_response
         mock_head.return_value.headers.update({'etag': etag})
 
-        # Create a new ProductImport record
-        pi = ProductImport()
+        # Create a new ImportRecord record
+        pi = ImportRecord()
         pi.etag = etag.strip('"')
         pi.url = self.default_url
         pi.save()
@@ -147,15 +147,15 @@ class TestFetchCommand(TestCase):
         mock_get.return_value = self.mock_get_response
 
         # Sanity check
-        self.assertEqual(ProductImport.objects.count(), 0)
+        self.assertEqual(ImportRecord.objects.count(), 0)
 
         # Set up our response headers
         etag = self.etags[0]
         mock_head.return_value = self.mock_head_response
         mock_head.return_value.headers.update({'etag': etag})
 
-        # Create a new ProductImport record
-        pi = ProductImport()
+        # Create a new ImportRecord record
+        pi = ImportRecord()
         pi.etag = etag.strip('"')
         pi.url = self.default_url
         pi.save()
@@ -191,7 +191,7 @@ class TestFetchCommand(TestCase):
         mock_get.return_value = self.mock_get_response
 
         # Sanity check
-        self.assertEqual(ProductImport.objects.count(), 0)
+        self.assertEqual(ImportRecord.objects.count(), 0)
 
         # Invoke our management command
         url = "http://example.com/"
@@ -304,6 +304,17 @@ class TestImportCommand(TestCase):
             i += 1
 
     def test_import_prices(self):
+        """
+        """
+        pass
+
+    def test_import_price_history(self):
+        """
+        """
+        pass
+
+class TestPeriodicCommand:
+    def test_smoke(self):
         """
         """
         pass

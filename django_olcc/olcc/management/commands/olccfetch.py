@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from olcc.models import ProductImport
+from olcc.models import ImportRecord
 from olcc.management.commands.olccimport import IMPORT_TYPES
 
 class Command(BaseCommand):
@@ -52,9 +52,9 @@ class Command(BaseCommand):
         try:
             previous_import = None
             try:
-                previous_import = ProductImport.objects.filter(\
+                previous_import = ImportRecord.objects.filter(\
                         url=url).latest('created_at')
-            except ProductImport.DoesNotExist:
+            except ImportRecord.DoesNotExist:
                 pass
 
             # Make a HEAD request for the given URL
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                     f.write(r.content)
 
                     # Create new import record
-                    new_import = ProductImport()
+                    new_import = ImportRecord()
                     new_import.url = url
                     new_import.etag = etag
                     new_import.save()

@@ -14,7 +14,7 @@ def format_phone(phone):
     phone = re.sub(r'[^0-9]', '', phone)
     return "(%s) %s-%s" % (phone[:3], phone[3:6], phone[6:])
 
-class ProductImport(models.Model):
+class ImportRecord(models.Model):
     """
     This model represents a product import.
     """
