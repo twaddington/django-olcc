@@ -60,6 +60,9 @@ class Product(models.Model):
 
     objects = ProductManager()
 
+    class Meta:
+        ordering = ['title',]
+
     def save(self, *args, **kwargs):
         # Sanitize the title
         self.title = self.format_title(self.title)
@@ -140,6 +143,7 @@ class ProductPrice(models.Model):
 
     class Meta:
         unique_together = ("product", "effective_date")
+        ordering = ['-effective_date',]
 
     def __unicode__(self):
         return u'%d' % (self.amount,)
@@ -160,6 +164,9 @@ class Store(models.Model):
     county = models.CharField(max_length=200, db_index=True)
     phone = models.CharField(max_length=14,)
     hours_raw = models.CharField(max_length=200,)
+
+    class Meta:
+        ordering = ['county', 'name',]
 
     def __unicode__(self):
         return u'[%s] %s' % (self.key, self.address,)
