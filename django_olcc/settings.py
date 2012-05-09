@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'olcc',
     'gunicorn',
+    'tastypie',
     'raven.contrib.django',
 )
 
