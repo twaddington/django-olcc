@@ -27,5 +27,13 @@ submitting a patch.
 - Price monitoring: Get notified when your favorite item drops in price.
 - Price intelligence: Analyze historical price changes to predict future sales.
 
+## Getting Started
+
+To run the local development server you should first install the
+Heroku command-line tools. You should then be able to start up
+the Gunicorn server by running `foreman start` in the `src`
+directory. Make sure you run `$ pip install requirements.txt` in
+your virtualenv first.
+
 [olcc]: http://www.oregon.gov/OLCC/index.shtml
 [project-home]: http://www.oregonliquorprices.com/
