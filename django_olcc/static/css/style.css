@@ -392,6 +392,10 @@ a:active {
         font-size: 140%;
     }
 
+    h2 {
+        font-size: 135%;
+    }
+
     .store {
         text-align: left;
         float: none;
@@ -410,6 +414,10 @@ a:active {
 @media screen and (min-width: 960px) {
     header {
         font-size: 160%;
+    }
+
+    h2 {
+        font-size: 145%;
     }
 }
 
