@@ -7,3 +7,4 @@ xlrd==0.7.7
 geopy==0.94.2
 raven==1.7.5
 django-tastypie==0.9.11
+beautifulsoup4==4.1.0
