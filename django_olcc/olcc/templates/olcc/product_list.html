@@ -1,6 +1,10 @@
 {% extends 'site_base.html' %}
 {% load i18n %}
 
+{% block title %}
+    Products
+{% endblock %}
+
 {% block content %}
     <ul>
     {% for product in products_page.object_list %}
