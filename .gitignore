@@ -11,3 +11,6 @@
 *.db
 *.db-journal
 settings_local.py
+
+# Ignore generated staticfiles
+staticfiles
