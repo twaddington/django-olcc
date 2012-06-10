@@ -106,6 +106,22 @@ class Product(models.Model):
 
         return self.prices.get(effective_date=last_month)
 
+    @property
+    def next_price(self):
+        """
+        Return last month's price for this Product.
+        """
+        today = datetime.date.today()
+
+        # Get the first of next month
+        try:
+            next_month = today.replace(month=today.month+1, day=1)
+        except ValueError:
+            if today.month == 12:
+                next_month = today.replace(year=today.year+1, month=1, day=1)
+
+        return self.prices.get(effective_date=next_month)
+
     @classmethod
     def format_title(cls, title):
         """
