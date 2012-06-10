@@ -1,4 +1,4 @@
-{% load staticfiles %}<!DOCTYPE html>
+{% load staticfiles olcc %}<!DOCTYPE html>
 <!--[if lt IE 7]>
     <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"><![endif]-->
 <!--[if IE 7]>
@@ -44,11 +44,13 @@
 
                 <nav>
                     <ul class="horizontal-nav">
-                        <li><a class="selected" href="{% url home %}">Oregon Liquor Prices</a></li>
-                        <li><a href="{% url products 1 %}">Products</a></li>
-                        <li><a href="{% url sale 1 %}">On Sale</a></li>
+                        {% activehref %}
+                        <li><a href="{% url home %}">Oregon Liquor Prices</a></li>
+                        <li><a href="{% url products %}">Products</a></li>
+                        <li><a href="{% url sale %}">On Sale</a></li>
                         <li><a href="{% url stores %}">Stores</a></li>
                         <li><a href="{% url about %}">About</a></li>
+                        {% endactivehref %}
                     </ul>
                 </nav>
             </div> 

@@ -9,36 +9,34 @@ def home_view(request):
     """
     The site landing page.
     """
-    context = {}
+    # Get a random set of on sale products to highlight
+    on_sale = Product.objects.all().order_by('?')[:5]
+
+    # Get a random set of products to highlight, excluding
+    # any on sale items we are already showing.
+    products = Product.objects.all().exclude(
+            pk__in=[p.pk for p in on_sale]).order_by('?')[:5]
+
+    context = {
+        'on_sale': on_sale,
+        'products': products,
+    }
     return render_to_response('olcc/home.html',
             context, context_instance=RequestContext(request))
 
-def product_list_view(request, page=1):
+def product_list_view(request, page=1, sale=False):
     """
     Display a paginated list of products.
     """
     per_page = int(request.GET.get('pp', 25))
-    products = Product.objects.all().order_by('title')
 
-    p = Paginator(products, per_page)
-    try:
-        products_page = p.page(page)
-    except InvalidPage:
-        raise Http404
-    
-    context = {
-        'products_page': products_page, 
-    }
+    if sale:
+        products = Product.objects.on_sale()
+    else:
+        products = Product.objects.all()
 
-    return render_to_response('olcc/product_list.html',
-            context, context_instance=RequestContext(request))
-
-def sale_list_view(request, page=1):
-    """
-    Display a paginated list of on sale products.
-    """
-    per_page = int(request.GET.get('pp', 25))
-    products = Product.objects.on_sale().order_by('title')
+    # Order the product list
+    products = products.order_by('title')
 
     p = Paginator(products, per_page)
     try:
@@ -69,17 +67,32 @@ def product_view(request, slug):
     return render_to_response('olcc/product.html',
             context, context_instance=RequestContext(request))
 
-def store_list_view(request):
+def store_view(request):
     """
-    Display a list of stores.
     """
-    # Order by county, then name
-    stores = Store.objects.all().order_by('county', 'name')[:5]
-
     context = {
-        'stores': stores,
     }
 
     return render_to_response('olcc/stores.html',
             context, context_instance=RequestContext(request))
 
+def store_list_view(request, county=None):
+    """
+    Display a list of stores.
+    """
+    if not county:
+        raise Http404
+
+    # Get our list of stores by county
+    stores = Store.objects.filter(county__iexact=county)
+
+    # Order by county, then name
+    stores = stores.order_by('county', 'name')
+
+    context = {
+        'county': county,
+        'stores': stores,
+    }
+
+    return render_to_response('olcc/store_list.html',
+            context, context_instance=RequestContext(request))
