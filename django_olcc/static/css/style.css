@@ -233,7 +233,8 @@ header {
     margin: 0;
     padding: 20px;
     color: #146e24;
-    font-size: 120%;
+    font-size: 125%;
+    background-color: #fff;
 }
 
 nav {
@@ -249,7 +250,7 @@ nav a:visited {
 
 nav a:hover,
 nav a:active,
-nav a.selected {
+nav a.active {
     color: #146e24;
 }
 
@@ -262,23 +263,31 @@ footer {
 }
 
 #content {
-    padding: 20px;
+    background-color: #fff;
 }
 
-header,
-#content {
-    background-color: #fff;
+#content .wrap {
+    padding: 0 20px 20px 20px;
 }
 
 header,
 h1,h2,h3,h4,h5,h6 {
+    color: #444;
     font-family: "Lobster", Georgia, Times, serif;
+    font-weight: normal;
 }
 
 h1 {
     margin: 0;
     padding: 0;
-    font-weight: normal;
+}
+
+h2 {
+    font-size: 125%;
+}
+
+h3 {
+    font-size: 115%;
 }
 
 a,
@@ -286,11 +295,83 @@ a:link,
 a:visited {
     color: inherit;
     text-decoration: underline;
+    outline: none;
 }
 
 a:hover,
 a:active {
     text-decoration: none;
+}
+
+.store {
+    margin: 0 0 20px 0;
+    padding: 20px;
+    font-size: 90%;
+    background-color: #F5F5F5;
+    overflow: hidden;
+    text-align: center;
+    float: left;
+    clear: both;
+}
+
+.store .details {
+    color: #888;
+}
+
+.store .name {
+    color: #444;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.store .adr {
+    font-style: italic;
+}
+
+.store .tel {
+    margin: 10px 0;
+}
+
+.store .hours {
+
+}
+
+.store .map {
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #FFF;
+    -webkit-box-shadow: 1px 1px 5px #444;
+    -moz-box-shadow: 1px 1px 5px #444;
+    -o-box-shadow: 1px 1px 5px #444;
+    box-shadow: 1px 1px 5px #444;
+}
+
+.price-list {
+    margin: 0 0 20px 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.price-list li:first-child {
+    border-top: 1px solid #dadfe1;
+}
+
+.price-list li {
+    list-style-type: none;
+}
+
+.price-list li a:link,
+.price-list li a:visited {
+    display: block;
+    margin: 0;
+    padding: 10px;
+    text-decoration: none;
+    border-bottom: 1px solid #dadfe1;
+}
+
+.price-list li a:hover,
+.price-list li a:active {
+    background-color: #ffe;
 }
 
 .horizontal-nav li,
@@ -306,14 +387,29 @@ a:active {
    Modify as content requires.
    ========================================================================== */
 
-@media screen and (min-width: 960px) {
-    /* Desktop */
-    html,body {
-        /* background-color: green; */
-    }
-
+@media screen and (min-width: 768px) {
     header {
         font-size: 140%;
+    }
+
+    .store {
+        text-align: left;
+        float: none;
+    }
+
+    .store .details {
+        float: left;
+    }
+
+    .store .map {
+        margin: 0;
+        float: right;
+    }
+}
+
+@media screen and (min-width: 960px) {
+    header {
+        font-size: 160%;
     }
 }
 

@@ -1,0 +1,40 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}
+    Stores
+{% endblock %}
+
+{% block content %}
+    <h2>Found {{ stores.count }} store{{ stores|pluralize }} in {{ county|capfirst }} county</h2>
+
+    {% for s in stores %}
+        <section class="store">
+            <div class="details">
+                <span class="name">{{ s.name }}</span><br />
+                <span class="adr">{{ s.address }}</span><br />
+ 
+                <div class="tel">
+                    <a href="tel:{{ s.tel }}">{{ s.phone }}</a>
+                </div>
+
+                <div class="hrs">
+                    {% for h in s.hours_list %}
+                        {{ h }}<br />
+                    {% endfor %}
+                </div>
+          </div>
+
+            <div class="map">
+                <a href="//maps.google.com/?q={{ s.address|urlencode }}@{{ s.latitude }},{{ s.longitude }}">
+                    <img
+                        width="350"
+                        height=200"
+                        src="//maps.googleapis.com/maps/api/staticmap?size=350x200&sensor=false&region=us&markers={{ s.address|urlencode }}" />
+                </a>
+            </div>
+        </section>
+    {% empty %}
+        <p>No stores found!</p>
+    {% endfor %}
+{% endblock %}
