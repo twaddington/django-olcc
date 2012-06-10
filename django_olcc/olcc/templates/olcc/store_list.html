@@ -26,7 +26,7 @@
           </div>
 
             <div class="map">
-                <a href="//maps.google.com/?q={{ s.address|urlencode }}@{{ s.latitude }},{{ s.longitude }}">
+                <a href="//maps.google.com/?ll={{ s.latitude }},{{ s.longitude }}&f=d&saddr=My%20Location&daddr={{ s.address|urlencode }}">
                     <img
                         width="350"
                         height=200"
