@@ -1,3 +1,4 @@
+import datetime
 import requests
 import xlrd
 
@@ -8,7 +9,7 @@ from django.test import TestCase
 
 from mock import Mock, patch
 
-from olcc.models import ImportRecord, Store
+from olcc.models import ImportRecord, Store, Product, ProductPrice
 from olcc.management.commands import olccfetch
 
 @patch('olcc.management.commands.olccfetch.call_command')
@@ -238,6 +239,18 @@ class TestImportCommand(TestCase):
             (12321, 'Third', '(541) 123-4567', 'Address', 'Hours', 'County'),
         ]
 
+        self.prices = [
+            ('0102B', '@', 'GLENFIDDICH SNOW PHOENIX', '750 ML', 6, 92.95),
+            ('0103B', '', 'BALVENIE 14 YR CARIBBEAN C', '750 ML', 6, 64.95),
+            ('0105B', '', 'DECO COFFEE RUM', '750 ML', 12, 23.95),
+        ]
+
+        self.history = [
+            ('2012', '7', '1241B', 'SWEET BABY MOONSHINE', '', 0, None, 95.00, 12, 25.95),
+            ('2012', '7', '1241B', 'WARSHIP SILVER RUM 125 PRO', '', 0, None, 125.00, 12, 24.95),
+            ('2012', '6', '0103B', 'BALVENIE 14 YR CARIBBEAN C', '', 14, None, 86.00, 6, 69.95),
+        ]
+
     def test_validation(self):
         """
         Verify the command throws the proper exceptions when
@@ -245,7 +258,7 @@ class TestImportCommand(TestCase):
         """
         # Test missing filename
         try:
-            print "\nTest Output: Ignore"
+            print "\nTest Output: Ignore Error"
             self.assertRaises(CommandError,
                     call_command, 'olccimport', quiet=True)
         except SystemExit:
@@ -253,7 +266,7 @@ class TestImportCommand(TestCase):
 
         # Test invalid filename
         try:
-            print "Test Output: Ignore"
+            print "Test Output: Ignore Error"
             self.assertRaises(CommandError,
                     call_command, 'olccimport', '/foo/bar/baz.xls', quiet=True)
         except SystemExit:
@@ -303,10 +316,65 @@ class TestImportCommand(TestCase):
             self.assertEqual(s.address, s.address_raw)
             i += 1
 
-    def test_import_prices(self):
+    @patch.object(xlrd, 'open_workbook')
+    def test_import_prices(self, mock_open_workbook):
         """
+        Test a basic prices file import.
         """
-        pass
+        # Configure our Mocks
+        sheet_mock = Mock()
+        sheet_mock.nrows = len(self.prices)
+        sheet_mock.row_values = Mock(side_effect=self.prices)
+
+        wb_mock = Mock(return_value=sheet_mock)
+        wb_mock.sheet_by_index = Mock(return_value=sheet_mock)
+
+        mock_open_workbook.return_value = wb_mock
+
+        # Sanity check
+        self.assertEqual(Product.objects.count(), 0)
+        self.assertEqual(ProductPrice.objects.count(), 0)
+
+        # Call our management command
+        path = 'foo/bar/baz/xml'
+        call_command('olccimport', path, quiet=True, import_type='prices',)
+
+        # Verify open_workbook was called correctly
+        self.assertTrue(mock_open_workbook.called)
+        self.assertEqual(mock_open_workbook.call_count, 1)
+        self.assertEqual(mock_open_workbook.call_args[0][0], path)
+
+        # Verify the expected number of objects were created
+        products = Product.objects.all().order_by('pk')
+        self.assertEqual(products.count(), len(self.prices))
+
+        prices = ProductPrice.objects.all().order_by('pk')
+        self.assertEqual(prices.count(), len(self.prices))
+
+        # Calculate the expected price date
+        today = datetime.date.today()
+        try:
+            price_date = today.replace(month=today.month+1, day=1)
+        except ValueError:
+            if today.month == 12:
+                price_date = today.replace(year=today.year+1, month=1, day=1)
+
+        # Verify the product data
+        i = 0
+        for p in products:
+            self.assertEqual(self.prices[i][0], p.code)
+            self.assertEqual(self.prices[i][1], p.status)
+            self.assertEqual(self.prices[i][2], p.title.upper())
+            self.assertEqual(self.prices[i][3], p.size)
+            self.assertEqual(self.prices[i][4], p.bottles_per_case)
+            self.assertEqual(p.prices.count(), 1)
+
+            # Verify the price data
+            price = p.prices.all()[0]
+            self.assertEqual(price.effective_date, price_date)
+
+            # Increment the counter
+            i += 1
 
     def test_import_price_history(self):
         """
