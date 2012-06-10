@@ -1,0 +1,11 @@
+/* TEAM */
+Lead Developer:Tristan Waddington
+Site:http://www.tristanwaddington.com/
+Twitter:@twaddington
+Location:Portland, Oregon, United States
+
+/* SITE */
+Standards:HTML5, CSS3
+Components:Modernizr, jQuery
+Software:Django,Python
+IDE:Vim

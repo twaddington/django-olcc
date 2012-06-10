@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load staticfiles %}<!DOCTYPE html>
+<!--[if lt IE 7]>
+    <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"><![endif]-->
+<!--[if IE 7]>
+    <html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if IE 8]>
+    <html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en"><!--<![endif]-->
     <head>
         <meta charset="utf-8">
 
         <!-- Enable Google Chrome Frame support -->
         <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
 
         <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
         <meta name="description" content="{% block meta-description %}{% endblock %}">
@@ -13,124 +21,31 @@
         <!-- TODO: Include a shortcut icon. -->
         <!-- TODO: Include an RSS feed for sale items. -->
 
-        <link
-            href="http://fonts.googleapis.com/css?family=Cabin|Lobster"
-            rel="stylesheet" type="text/css" />
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
+        <!-- Fonts -->
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Cabin|Lobster" />
 
-            html, body {
-                margin: 0;
-                padding: 0;
-                color: #444;
-                font-size: 20px;
-                font-family: "Cabin", Helvetica, Arial, sans-serif;
-                background-color: #dadfe1;
-            }
-
-            .wrap {
-                width: 760px;
-                margin: auto;
-                overflow: hidden;
-            }
-
-            #header,
-            #content {
-                background-color: #fff;
-            }
-
-            #header,
-            #content,
-            #footer {
-                margin: 0;
-                padding: 20px;
-            }
-
-            #header {
-                color: #146e24;
-            }
-
-            #content {
-                /* stub */
-            }
-
-            #content p {
-                max-width: 55%;
-            }
-
-            #content p:first-child {
-                margin-top: 0;
-            }
-
-            #footer {
-                color: #888;
-                font-size: 65%;
-                text-align: center;
-            }
-
-            h1,h2,h3,h4,h5,h6 {
-                font-family: "Lobster", Georgia, Times, serif;
-            }
-
-            h1 {
-                font-size: 200%;
-                font-weight: normal;
-            }
-
-            h1 span {
-                margin-left: 5px;
-                color: #bcbcbc;
-                font-size: 40%;
-                font-family: monospace;
-            }
-
-            a,
-            a:link,
-            a:visited {
-                color: inherit;
-                text-decoration: underline;
-            }
-
-            a:hover,
-            a:active {
-                text-decoration: none;
-            }
-
-            p {
-                margin: 20px 0;
-            }
-
-            p:first-child {
-                margin-top: 0;
-            }
-        </style>
-
-        <!-- Google Analytics -->
-        <script type="text/javascript">
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-2012911-15']);
-          _gaq.push(['_trackPageview']);
-
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-        </script>
+        <!-- Scripts -->
+        <script src="{% static 'js/libs/modernizr-2.5.3.min.js' %}"></script>
     </head>
     <body>
-        <div id="header">
+        <!-- Prompt IE 6 users to install Chrome Frame. -->
+        <!--[if lt IE 7]>
+            <p class=chromeframe>
+                Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.
+            </p>
+        <![endif]-->
+
+        <header>
             <div class="wrap">
                 <h1>
                     Oregon Liquor Prices
                     <span>The unofficial price list.</span>
                 </h1>
             </div> 
-        </div>
+        </header>
 
         <div id="content" role="main">
             <div class="wrap">
@@ -138,7 +53,7 @@
             </div>
         </div>
 
-        <div id="footer">
+        <footer>
             <div class="wrap">
                 <p>
                     Site by <a href="http://www.tristanwaddington.com/">Tristan Waddington</a> |
@@ -152,6 +67,26 @@
                             border="0" alt="A Django site." title="A Django site." />
                     </a>
             </div>
-        </div>
+        </footer>
+
+        <!-- Scripts at the bottom for faster loading! -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="{% static 'js/libs/jquery-1.7.1.min.js' %}"><\/script>')</script>
+
+        <script src="{% static 'js/plugins.js' %}"></script>
+        <script src="{% static 'js/script.js' %}"></script>
+
+        <!-- Google Analytics -->
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-2012911-15']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
     </body>
 </html>

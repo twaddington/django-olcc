@@ -14,13 +14,17 @@ urlpatterns = patterns('',
     # Wire up the admin urls
     url(r'^admin/', include(admin.site.urls)),
 
-    # Static files
-    #(r'^static/(?P<static>.*)$', 'django.views.static.serve',
-    #    {'document_root': settings.STATIC_ROOT}),
+    # humans.txt
+    (r'^humans\.txt$', direct_to_template,
+        {'template': 'humans.txt', 'mimetype': 'text/plain'}),
 
     # robots.txt
     (r'^robots\.txt$', direct_to_template,
         {'template': 'robots.txt', 'mimetype': 'text/plain'}),
+
+    # crossdomain.xml
+    (r'^crossdomain\.xml$', direct_to_template,
+        {'template': 'crossdomain.xml', 'mimetype': 'application/xml'}),
 )
 
 # Static files
