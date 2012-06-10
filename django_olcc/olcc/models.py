@@ -194,6 +194,10 @@ class Store(models.Model):
         p = re.sub(r'[^0-9]', '', self.phone)
         return "+1-%s-%s-%s" % (p[:3], p[3:6], p[6:])
 
+    @property
+    def hours_list(self):
+        return [h.strip() for h in self.hours_raw.split(';')]
+
     @classmethod
     def from_row(cls, values):
         """
