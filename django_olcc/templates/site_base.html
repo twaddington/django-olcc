@@ -12,7 +12,7 @@
 
         <!-- Enable Google Chrome Frame support -->
         <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0">
 
         <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
         <meta name="description" content="{% block meta-description %}{% endblock %}">
@@ -40,10 +40,17 @@
 
         <header>
             <div class="wrap">
-                <h1>
-                    Oregon Liquor Prices
-                    <span>The unofficial price list.</span>
-                </h1>
+                <h1 class="visuallyhidden">Oregon Liquor Prices</h1>
+
+                <nav>
+                    <ul class="horizontal-nav">
+                        <li><a class="selected" href="{% url home %}">Oregon Liquor Prices</a></li>
+                        <li><a href="{% url products 1 %}">Products</a></li>
+                        <li><a href="">On Sale</a></li>
+                        <li><a href="{% url stores %}">Stores</a></li>
+                        <li><a href="">About</a></li>
+                    </ul>
+                </nav>
             </div> 
         </header>
 
@@ -59,13 +66,6 @@
                     Site by <a href="http://www.tristanwaddington.com/">Tristan Waddington</a> |
                     All data obtained directly from the <a title="Oregon Liquor Control Commission" href="http://www.oregon.gov/OLCC/">OLCC</a>
                 </p>
-
-                <p>
-                    <a href="http://www.djangoproject.com/">
-                        <img
-                            src="http://media.djangoproject.com/img/badges/djangosite100x25.gif"
-                            border="0" alt="A Django site." title="A Django site." />
-                    </a>
             </div>
         </footer>
 
