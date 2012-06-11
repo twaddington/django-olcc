@@ -1,5 +1,13 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 from django.views.generic.simple import direct_to_template
+
+from tastypie.api import Api
+from olcc.api import ProductResource, ProductPriceResource, StoreResource
+
+v1_api = Api(api_name='v1')
+v1_api.register(ProductResource())
+v1_api.register(ProductPriceResource())
+v1_api.register(StoreResource())
 
 urlpatterns = patterns('olcc.views',
     url(r'^$', 'home_view', name='home'),
@@ -21,4 +29,7 @@ urlpatterns = patterns('olcc.views',
     # Static about page
     url(r'^about/$', direct_to_template,
             {'template': 'olcc/about.html',}, name='about'),
+
+    # REST API
+    (r'^api/', include(v1_api.urls)),
 )
