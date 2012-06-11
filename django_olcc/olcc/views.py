@@ -90,12 +90,15 @@ def store_view(request, county=None):
 
         # Build our form
         form = CountyForm({'county': county})
+
+        # Title case our county
+        county = county.title()
     else:
         form = CountyForm()
 
     context = {
         'form': form,
-        'county': county.title(),
+        'county': county,
         'stores': stores,
     }
 
