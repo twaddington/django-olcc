@@ -95,7 +95,7 @@ def store_view(request, county=None):
 
     context = {
         'form': form,
-        'county': county,
+        'county': county.title(),
         'stores': stores,
     }
 
