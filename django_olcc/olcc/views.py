@@ -38,6 +38,12 @@ def product_list_view(request, page=1, sale=False):
         title = 'Products'
         products = Product.objects.all()
 
+    # Filter the product list
+    query = request.GET.get('q')
+
+    if query:
+        products = products.filter(title__icontains=query)
+
     # Order the product list
     products = products.order_by('title')
 
@@ -50,6 +56,7 @@ def product_list_view(request, page=1, sale=False):
     context = {
         'title': title,
         'products_page': products_page, 
+        'query': query,
     }
 
     return render_to_response('olcc/product_list.html',

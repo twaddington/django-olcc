@@ -2,17 +2,32 @@
 {% load i18n %}
 
 {% block title %}
-    Products
+    {{ title }}
 {% endblock %}
 
 {% block content %}
-    <ul>
+    {% if query %}
+        <h2>
+            Found {{ products_page.paginator.count }}
+            product{{ products_page.object_list|pluralize }} for &quot;{{ query }}&quot;
+        </h2>
+    {% else %}
+        <h2>{{ title }}</h2>
+    {% endif %}
+
+    <ul class="price-list">
     {% for product in products_page.object_list %}
         <li>
             <a href="{% url product product.slug %}">
                 {{ product.title }}
+                <small>({{ product.size }})</small>
+
+                <small>| {{ product.proof }} proof</small>
+                <small>| {{ product.age }} years</small>
+
+                <!-- This month v. last month price in colored boxes -->
+                <!-- Add an icon if they are currently on sale -->
             </a>
-            <small>({{ product.size }})</small>
         </li>
     {% endfor %}
     </ul>
