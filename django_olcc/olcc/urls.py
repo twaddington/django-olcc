@@ -15,8 +15,8 @@ urlpatterns = patterns('olcc.views',
     url(r'^sale/$', 'product_list_view', kwargs={'sale': True,}, name='sale'),
 
     # Stores
+    url(r'^stores/(?P<county>[\w\s]+)/$', 'store_view'),
     url(r'^stores/$', 'store_view', name='stores'),
-    url(r'^stores/(?P<county>\w+)/$', 'store_list_view'),
 
     # Static about page
     url(r'^about/$', direct_to_template,

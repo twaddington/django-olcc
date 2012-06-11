@@ -6,35 +6,50 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Found {{ stores.count }} store{{ stores|pluralize }} in {{ county|capfirst }} county</h2>
+    <h2>Find a Store</h2>
 
-    {% for s in stores %}
-        <section class="store">
-            <div class="details">
-                <span class="name">{{ s.name }}</span><br />
-                <span class="adr">{{ s.address }}</span><br />
- 
-                <div class="tel">
-                    <a href="tel:{{ s.tel }}">{{ s.phone }}</a>
+    <form id="find-stores" action="" method="POST">{% csrf_token %}
+        <fieldset>
+            <ol>
+                {{ form.as_ul }}
+                <li>
+                    <input type="submit" value="Submit" />
+                </li>
+            </ol>
+        </fieldset>
+    </form>
+
+    {% if stores %}
+        <h2>Found {{ stores.count }} store{{ stores|pluralize }} in {{ county }} county</h2>
+
+        {% for s in stores %}
+            <section class="store">
+                <div class="details">
+                    <span class="name">{{ s.name }}</span><br />
+                    <span class="adr">{{ s.address }}</span><br />
+     
+                    <div class="tel">
+                        <a href="tel:{{ s.tel }}">{{ s.phone }}</a>
+                    </div>
+
+                    <div class="hrs">
+                        {% for h in s.hours_list %}
+                            {{ h }}<br />
+                        {% endfor %}
+                    </div>
+              </div>
+
+                <div class="map">
+                    <a href="//maps.google.com/?ll={{ s.latitude }},{{ s.longitude }}&f=d&saddr=My%20Location&daddr={{ s.address|urlencode }}">
+                        <img
+                            width="350"
+                            height=200"
+                            src="//maps.googleapis.com/maps/api/staticmap?size=350x200&sensor=false&region=us&markers={{ s.address|urlencode }}" />
+                    </a>
                 </div>
-
-                <div class="hrs">
-                    {% for h in s.hours_list %}
-                        {{ h }}<br />
-                    {% endfor %}
-                </div>
-          </div>
-
-            <div class="map">
-                <a href="//maps.google.com/?ll={{ s.latitude }},{{ s.longitude }}&f=d&saddr=My%20Location&daddr={{ s.address|urlencode }}">
-                    <img
-                        width="350"
-                        height=200"
-                        src="//maps.googleapis.com/maps/api/staticmap?size=350x200&sensor=false&region=us&markers={{ s.address|urlencode }}" />
-                </a>
-            </div>
-        </section>
-    {% empty %}
-        <p>No stores found!</p>
-    {% endfor %}
+            </section>
+        {% empty %}
+            <p>No stores found!</p>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

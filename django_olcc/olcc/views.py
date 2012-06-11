@@ -1,8 +1,9 @@
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
+from olcc.forms import CountyForm
 from olcc.models import Product, ProductPrice, Store
 
 def home_view(request):
@@ -31,8 +32,10 @@ def product_list_view(request, page=1, sale=False):
     per_page = int(request.GET.get('pp', 25))
 
     if sale:
+        title = 'On Sale'
         products = Product.objects.on_sale()
     else:
+        title = 'Products'
         products = Product.objects.all()
 
     # Order the product list
@@ -45,6 +48,7 @@ def product_list_view(request, page=1, sale=False):
         raise Http404
     
     context = {
+        'title': title,
         'products_page': products_page, 
     }
 
@@ -67,29 +71,27 @@ def product_view(request, slug):
     return render_to_response('olcc/product.html',
             context, context_instance=RequestContext(request))
 
-def store_view(request):
+def store_view(request, county=None):
     """
+    Display a form for filtering a list of stores by county.
     """
-    context = {
-    }
+    stores = None
 
-    return render_to_response('olcc/stores.html',
-            context, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        form = CountyForm(request.POST)
+        if form.is_valid():
+            return redirect(store_view, county=form.cleaned_data['county'])
+    else:
+        form = CountyForm()
 
-def store_list_view(request, county=None):
-    """
-    Display a list of stores.
-    """
-    if not county:
-        raise Http404
+    if county:
+        stores = Store.objects.filter(county__iexact=county)
 
-    # Get our list of stores by county
-    stores = Store.objects.filter(county__iexact=county)
-
-    # Order by county, then name
-    stores = stores.order_by('county', 'name')
+        # Order by county, then name
+        stores = stores.order_by('county', 'name')
 
     context = {
+        'form': form,
         'county': county,
         'stores': stores,
     }
