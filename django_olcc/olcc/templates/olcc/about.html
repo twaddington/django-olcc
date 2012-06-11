@@ -1,10 +1,71 @@
 {% extends 'site_base.html' %}
-{% load i18n %}
+{% load i18n staticfiles %}
 
 {% block title %}
     About
 {% endblock %}
 
 {% block content %}
-    Hello, World!
+    <div id="powered-by">
+        <h2>Powered by</h2>
+        <p>
+            <a href="https://www.heroku.com/">
+                <img width="120" height="60" src="{% static 'img/heroku-small.png' %}" />
+            </a>
+        </p>
+
+        <p>
+            <a href="https://www.djangoproject.com/">
+                <img width="120" height="42" src="{% static 'img/django-small.png' %}" />
+            </a>
+        </p>
+
+        <p>
+            <a href="https://github.com/twaddington/django-olcc/">
+                <img width="121" height="54" src="{% static 'img/github-small.png' %}" />
+            </a>
+        </p>
+    </div>
+
+    <div id="about-text">
+        <h2>About</h2>
+        <div class="copy">
+            <p>
+                Welcome to <em>Oregon Liquor Prices</em>, the unofficial
+                <abbr title="Oregon Liquor Control Commission">OLCC</abbr>
+                price list!
+            </p>
+
+            <p>
+                You can find the official OLCC product search at
+                <a href="http://oregonliquorsearch.com/">oregonliquorsearch.com</a>.
+            </p>
+
+            <p>
+                Unfortunately the OLCC doesn't offer an API, but they do publish the
+                current month's
+                <a href="http://www.oregon.gov/OLCC/LIQUORSTORES/current_month_productandpricing.shtml">
+                    price list</a> on their website.
+            </p>
+
+            <p>
+                A few years ago I hacked together a quick and dirty script to
+                import that list and display a crude product search on the web.
+                I always meant to get back to the project and add some awesome
+                new features, but hadn't been able until now.
+            </p>
+
+            <p>
+                This site is the result of that experimentation. It's a true
+                example of what can be done with a little bit of time and
+                an open data-set. The project is open source and you can
+                view the source code on
+                <a href="https://github.com/twaddington/django-olcc/">GitHub</a>.
+            </p>
+
+            <p>
+                Thanks for stopping by and stay tuned for more updates.
+            </p>
+        </div>
+    </div>
 {% endblock %}

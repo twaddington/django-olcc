@@ -303,6 +303,39 @@ a:active {
     text-decoration: none;
 }
 
+fieldset {
+    margin: 0;
+    padding: 20px;
+    background-color: #F5F5F5;
+}
+
+fieldset ol,
+fieldset li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+fieldset .errorlist {
+    margin: 10px 0;
+    padding: 0;
+    color: red;
+}
+
+#powered-by {
+    margin: 0 0 20px 60px;
+    float: right;
+}
+
+#about-text {
+    text-align: justify;
+}
+
+#about-text p:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+
 .store {
     margin: 0 0 20px 0;
     padding: 20px;
@@ -310,7 +343,6 @@ a:active {
     background-color: #F5F5F5;
     overflow: hidden;
     text-align: center;
-    float: left;
     clear: both;
 }
 
@@ -337,7 +369,8 @@ a:active {
 }
 
 .store .map {
-    margin-top: 20px;
+    width: 350px;
+    margin: 20px auto 0;
     padding: 5px;
     background-color: #FFF;
     -webkit-box-shadow: 1px 1px 5px #444;
@@ -394,6 +427,20 @@ a:active {
 
     h2 {
         font-size: 135%;
+    }
+
+    #about-text .copy {
+        -webkit-column-gap: 4em;
+        -moz-column-gap: 4em;
+        column-gap: 4em;
+
+        -webkit-column-rule: 1px solid #F5F5F5;
+        -moz-column-rule: 1px solid #F5F5F5;
+        column-rule: 1px solid #F5F5F5;
+
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
     }
 
     .store {
