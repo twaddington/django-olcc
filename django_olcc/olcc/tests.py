@@ -249,6 +249,9 @@ class TestImportCommand(TestCase):
             ('2012', '7', '1241B', 'SWEET BABY MOONSHINE', '750 ML', 0, None, 95.00, 12, 25.95),
             ('2012', '7', '1243B', 'WARSHIP SILVER RUM 125 PRO', '', 0, None, 125.00, 12, 24.95),
             ('2012', '6', '0103B', 'BALVENIE 14 YR CARIBBEAN C', '', 14, None, 86.00, 6, 69.95),
+            ('2011', '7', '1241B', 'SWEET BABY MOONSHINE', '750 ML', 0, None, 95.00, 12, 15.95),
+            ('2011', '7', '1243B', 'WARSHIP SILVER RUM 125 PRO', '', 0, None, 125.00, 12, 14.95),
+            ('2011', '6', '0103B', 'BALVENIE 14 YR CARIBBEAN C', '', 14, None, 86.00, 6, 39.95),
         ]
 
     def test_validation(self):
@@ -406,7 +409,7 @@ class TestImportCommand(TestCase):
 
         # Verify the expected number of objects were created
         products = Product.objects.all().order_by('pk')
-        self.assertEqual(products.count(), len(self.history))
+        self.assertEqual(products.count(), len(self.history) / 2)
 
         prices = ProductPrice.objects.all().order_by('pk')
         self.assertEqual(prices.count(), len(self.history))
@@ -419,7 +422,7 @@ class TestImportCommand(TestCase):
             self.assertEqual(self.history[i][4], p.size)
             self.assertEqual(self.history[i][5], p.age)
             self.assertEqual(self.history[i][7], p.proof)
-            self.assertEqual(p.prices.count(), 1)
+            self.assertEqual(p.prices.count(), 2)
 
             # Calculate the expected price data
             price_date = datetime.date(int(self.history[i][0]),
