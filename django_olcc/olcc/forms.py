@@ -45,4 +45,4 @@ class CountyForm(forms.Form):
     A simple form containing a single choice field with a list
     of Oregon counties as choices.
     """
-    county = forms.ChoiceField(label='County', choices=COUNTIES,)
+    county = forms.ChoiceField(label='By County', choices=COUNTIES,)
