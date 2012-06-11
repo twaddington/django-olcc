@@ -81,14 +81,17 @@ def store_view(request, county=None):
         form = CountyForm(request.POST)
         if form.is_valid():
             return redirect(store_view, county=form.cleaned_data['county'])
-    else:
-        form = CountyForm()
 
     if county:
         stores = Store.objects.filter(county__iexact=county)
 
         # Order by county, then name
         stores = stores.order_by('county', 'name')
+
+        # Build our form
+        form = CountyForm({'county': county})
+    else:
+        form = CountyForm()
 
     context = {
         'form': form,
