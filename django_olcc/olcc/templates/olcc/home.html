@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %}
-    Home
+    Search
 {% endblock %}
 
 {% block content %}
@@ -18,28 +18,39 @@
         <a href="http://oregonliquorsearch.com/">oregonliquorsearch.com</a>.
     </p>
 
-    <p>
-        <form id="search" action="{% url products %}" method="GET">
-            <fieldset>
-                <input name="q" type="text" placeholder="Search..." />
-            </fieldset>
-        </form>
-    </p>
-
     <section id="on-sale">
         <h2><a href="{% url sale %}">On Sale</a></h2>
 
         <ul class="price-list">
-            {% for product in on_sale %}
-                <li>
-                    <a href="{% url product product.slug %}">
-                        {{ product.title }}
-                        <small>({{ product.size }})</small>
-                    </a>
-                </li>
-            {% empty %}
-                <li>:(</li>
-            {% endfor %}
+        {% for product in on_sale %}
+            <li class="product-row {% if product.on_sale %}on-sale{% endif %}">
+                <a href="{% url product product.slug %}">
+                    <div class="title">
+                        {{ product.title }} <span class="size"> {{product.size }}</span>
+                    </div>
+
+                    <div class="meta">
+                        <span class="code">{{ product.code }}</span>
+                        
+                        {% if product.proof %}
+                            | <span class="proof">{{ product.proof }}-proof</span>
+                        {% endif %}
+
+                        {% if product.age %}
+                            | <span class="age">{{ product.age }}-years</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="price">
+                        {% if not product.price %}
+                            N/A
+                        {% else %}
+                            {{ product.price }}
+                        {% endif %}
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
         </ul>
     </section>
 
@@ -47,16 +58,35 @@
         <h2><a href="{% url products %}">Products</a></h2>
 
         <ul class="price-list">
-            {% for product in products %}
-                <li>
-                    <a href="{% url product product.slug %}">
-                        {{ product.title }}
-                        <small>({{ product.size }})</small>
-                    </a>
-                </li>
-            {% empty %}
-                <li>:(</li>
-            {% endfor %}
+        {% for product in products %}
+            <li class="product-row {% if product.on_sale %}on-sale{% endif %}">
+                <a href="{% url product product.slug %}">
+                    <div class="title">
+                        {{ product.title }} <span class="size"> {{product.size }}</span>
+                    </div>
+
+                    <div class="meta">
+                        <span class="code">{{ product.code }}</span>
+                        
+                        {% if product.proof %}
+                            | <span class="proof">{{ product.proof }}-proof</span>
+                        {% endif %}
+
+                        {% if product.age %}
+                            | <span class="age">{{ product.age }}-years</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="price">
+                        {% if not product.price %}
+                            N/A
+                        {% else %}
+                            {{ product.price }}
+                        {% endif %}
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
         </ul>
     </section>
 {% endblock %}

@@ -53,6 +53,12 @@
                         {% endactivehref %}
                     </ul>
                 </nav>
+
+                <form id="search" action="{% url products %}" method="GET">
+                    <fieldset>
+                        <input name="q" type="search" placeholder="Search..." value ="{{ request.GET.q }}" />
+                    </fieldset>
+                </form>
             </div> 
         </header>
 

@@ -216,6 +216,7 @@ html, body {
 }
 
 .wrap {
+    position: relative;
     min-width: 480px;
     max-width: 960px;
     margin: auto;
@@ -238,7 +239,8 @@ header {
 }
 
 nav {
-    /* stub */
+    width: 100%;
+    overflow: hidden;
 }
 
 nav a,
@@ -252,6 +254,34 @@ nav a:hover,
 nav a:active,
 nav a.active {
     color: #146e24;
+}
+
+#search {
+    display: block;
+    margin-top: 20px;
+}
+
+#search form,
+#search fieldset {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+
+#search input {
+    display: block;
+    width: 90%;
+    margin: 0;
+    padding: 6px 4px;
+    color: #888;
+    font-size: 75%;
+    border: none;
+    border-bottom: 1px solid #bcbcbc;
+    opacity: .35;
+}
+
+#search input:focus {
+    opacity: 1;
 }
 
 footer {
@@ -464,6 +494,51 @@ fieldset .errorlist {
     font-size: 115%;
 }
 
+#product-profile {
+
+}
+
+#product-profile .price {
+    margin: 20px 0;
+    padding: 0;
+    color: #888;
+}
+
+#product-profile .price tbody {
+    display: block;
+    margin: 0;
+    padding: 15px;
+    background-color: #F5F5F5;
+}
+
+#product-profile .price td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#product-profile .price .help {
+    margin: 5px;
+    font-size: 65%;
+}
+
+#current-price {
+    margin: 0;
+    padding: 0 15px 0 0;
+    font-size: 180%;
+    border-right: 1px solid #dadfe1;
+}
+
+#next-price {
+    position: relative;
+    left: 15px;
+    padding:  5px 10px;
+    border-bottom: 1px solid #dadfe1;
+}
+
+#previous-price {
+    padding: 5px 10px;
+}
+
 .horizontal-nav li,
 .horizontal-nav a {
     display: block;
@@ -480,6 +555,20 @@ fieldset .errorlist {
 @media screen and (min-width: 768px) {
     header {
         font-size: 140%;
+    }
+
+    nav {
+        width: auto;
+    }
+
+    #search {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        margin: 4px 0 0 0;
+        padding: 0;
+        font-size: 75%;
     }
 
     h2 {
