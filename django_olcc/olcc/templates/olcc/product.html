@@ -6,13 +6,103 @@
 {% endblock %}
 
 {% block content %}
-    <div id="product">
+    <div id="product-profile">
         <h2>{{ product.title }}</h2>
-        <dl>
-            <dt>Price:</dt>
-            <dd>{{ product.price }}</dd>
-            <dt>Size:</dt>
-            <dd>{{ product.size }}</dd>
-        </dl>
+
+        <div class="meta">
+            <span class="code">{{ product.code }}</span>
+            
+            {% if product.proof %}
+                | <span class="proof">{{ product.proof }}-proof</span>
+            {% endif %}
+
+            {% if product.age %}
+                | <span class="age">{{ product.age }}-years</span>
+            {% endif %}
+        </div>
+
+        <div class="price">
+            <table>
+                <tbody>
+                    <tr>
+                        <td id="current-price" rowspan="2">
+                            {% if not product.price %}
+                                N/A
+                            {% else %}
+                                {{ product.price }}
+                            {% endif %}
+                        </td>
+                        <td id="next-price">
+                            {% if not product.next_price %}
+                                N/A
+                            {% else %}
+                                {{ product.next_price }}
+                            {% endif %}
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td id="previous-price">
+                            {% if not product.previous_price %}
+                                N/A
+                            {% else %}
+                                {{ product.previous_price }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <span class="help">
+                This month's price &mdash; with the coming month, over the previous month.
+            </span>
+        </div>
+
+        <div id="price-chart"></div>
+
+        <table
+            <tbody>
+            {% for p in product.prices.all %}
+                <tr>
+                    <td>{{ p.effective_date|date:"M, Y" }}</td>
+                    <td>{{ p }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
     </div>
+
+    <!-- Charts -->
+    <script src="https://www.google.com/jsapi"></script>
+    <script>
+        google.load('visualization', '1', {packages: ['corechart']});
+    </script>
+
+    <script>
+        function drawVisualization() {
+          // Create and populate the data table.
+          var data = google.visualization.arrayToDataTable([
+            ['Month', 'Price'],
+            {% for p in prices reversed %}
+            ['{{p.effective_date|date:'M'}}', {{p.amount}}],
+            {% endfor %}
+          ]);
+
+          // Create and draw the visualization.
+          new google.visualization.LineChart(document.getElementById('price-chart')).
+              draw(data,
+                {
+                    title:"Last 12 Months",
+                    width: 800,
+                    height: 300,
+                    vAxis: {
+                        title: "Price",
+                        format: "$#.##"
+                    },
+                    hAxis: {title: "Month"}
+                }
+              );
+        }
+        google.setOnLoadCallback(drawVisualization);
+    </script>
 {% endblock %}

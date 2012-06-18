@@ -73,6 +73,7 @@ def product_view(request, slug):
 
     context = {
         'product': product,
+        'prices': product.prices.all()[:12]
     }
 
     return render_to_response('olcc/product.html',
