@@ -15,6 +15,14 @@ class ActiveHref(template.Node):
     This template tag will set an 'active' class attribute
     on any anchor with an href value that matches part of the
     current url path.
+
+    Sample template usage:
+
+    {% activehref %}
+    <li><a href="{% url products %}">Products</a></li>
+    <li><a href="{% url stores %}">Stores</a></li>
+    <li><a href="{% url about %}">About</a></li>
+    {% endactivehref %} 
     """
     def __init__(self, nodelist):
         self.nodelist = nodelist
