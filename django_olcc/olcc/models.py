@@ -162,7 +162,7 @@ class ProductPrice(models.Model):
         ordering = ['-effective_date',]
 
     def __unicode__(self):
-        return u'%d' % (self.amount,)
+        return u'%.2f' % (self.amount,)
 
 class Store(models.Model):
     """
