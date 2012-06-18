@@ -3,6 +3,7 @@
 
 # Ignore editor files
 *.swp
+*.swo
 
 # Ignore compiled code
 *.pyc
