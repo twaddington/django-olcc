@@ -54,9 +54,11 @@ class Command(BaseCommand):
         if Product.is_code_valid(row.get('code')):
             product, created = Product.objects.get_or_create(code=row.get('code'))
 
-            if created or not self.import_type == 'price_history':
+            if created:
+                # Set the product title once and once only
                 product.title = row.get('title')
 
+            if created or not self.import_type == 'price_history':
                 # Update our product
                 if row.get('status'):
                     product.status = row.get('status')
