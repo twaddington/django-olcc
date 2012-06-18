@@ -1,5 +1,5 @@
 {% extends 'site_base.html' %}
-{% load i18n %}
+{% load i18n humanize %}
 
 {% block title %}
     {{ title }}
@@ -17,16 +17,31 @@
 
     <ul class="price-list">
     {% for product in products_page.object_list %}
-        <li>
+        <li class="product-row {% if product.on_sale %}on-sale{% endif %}">
             <a href="{% url product product.slug %}">
-                {{ product.title }}
-                <small>({{ product.size }})</small>
+                <div class="title">
+                    {{ product.title }} <span class="size"> {{product.size }}</span>
+                </div>
 
-                <small>| {{ product.proof }} proof</small>
-                <small>| {{ product.age }} years</small>
+                <div class="meta">
+                    <span class="code">{{ product.code }}</span>
+                    
+                    {% if product.proof %}
+                        | <span class="proof">{{ product.proof }}-proof</span>
+                    {% endif %}
 
-                <!-- This month v. last month price in colored boxes -->
-                <!-- Add an icon if they are currently on sale -->
+                    {% if product.age %}
+                        | <span class="age">{{ product.age }}-years</span>
+                    {% endif %}
+                </div>
+
+                <div class="price">
+                    {% if not product.price %}
+                        N/A
+                    {% else %}
+                        ${{ product.price }}
+                    {% endif %}
+                </div>
             </a>
         </li>
     {% endfor %}
