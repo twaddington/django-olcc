@@ -78,6 +78,7 @@
         <script src="{% static 'js/plugins.js' %}"></script>
         <script src="{% static 'js/script.js' %}"></script>
 
+        {% if not debug %}
         <!-- Google Analytics -->
         <script type="text/javascript">
           var _gaq = _gaq || [];
@@ -90,5 +91,6 @@
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
           })();
         </script>
+        {% endif %}
     </body>
 </html>
