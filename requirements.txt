@@ -8,3 +8,4 @@ geopy==0.94.2
 raven==1.7.5
 django-tastypie==0.9.11
 beautifulsoup4==4.1.0
+dj-database-url==0.2.1
