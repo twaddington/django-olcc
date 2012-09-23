@@ -19,6 +19,9 @@ submitting a patch.
 
     $ python manage.py test olcc
 
+Please make sure your editor is configured to use the proper indentation
+style with 4-spaces and no tab characters.
+
 ## Potential Features
 
 - Parse the store hours into a machine readable format. Display stores as
