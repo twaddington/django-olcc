@@ -212,7 +212,7 @@ td { vertical-align: top; }
 html, body {
     color: #444;
     font-family: "Cabin", Helvetica, Arial, sans-serif;
-    background-color: #111;
+    background-color: #666;
 }
 
 .wrap {
@@ -286,10 +286,20 @@ nav a.active {
 
 footer {
     padding: 20px;
-    color: #ccc;
-    font-size: 75%;
-    font-weight: lighter;
+    color: #eee;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 85%;
+    font-weight: normal;
     text-align: center;
+    text-shadow: 0 -1px 0 #000;
+    box-shadow: 0 4px 8px #222 inset;
+}
+
+footer p {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 400px;
+    text-align: justify;
 }
 
 #content {
@@ -305,6 +315,11 @@ h1,h2,h3,h4,h5,h6 {
     color: #444;
     font-family: "Lobster", Georgia, Times, serif;
     font-weight: normal;
+}
+
+footer h2, footer h3 {
+    color: #fff;
+    font-size: 175%;
 }
 
 h1 {
@@ -565,7 +580,7 @@ fieldset .errorlist {
         position: absolute;
         top: 0;
         right: 0;
-        width: 200px;
+        width: 225px;
         margin: 4px 0 0 0;
         padding: 0;
         font-size: 75%;

@@ -49,7 +49,6 @@
                         <li><a href="{% url products %}">Products</a></li>
                         <li><a href="{% url sale %}">On Sale</a></li>
                         <li><a href="{% url stores %}">Stores</a></li>
-                        <li><a href="{% url about %}">About</a></li>
                         {% endactivehref %}
                     </ul>
                 </nav>
@@ -70,10 +69,34 @@
 
         <footer>
             <div class="wrap">
-                <p>
-                    Site by <a href="http://www.tristanwaddington.com/">Tristan Waddington</a> |
-                    All price data obtained directly from the <a title="Oregon Liquor Control Commission" href="http://www.oregon.gov/OLCC/">OLCC</a>
-                </p>
+                <section>
+                    <h2>About</h2>
+                    <p>
+                        Oregon Liquor Prices evolved from a small PHP project
+                        over the course of several years. It was started
+                        simply because the
+                        <abbr title="Oregon Liquor Control Commission">OLCC</abbr>
+                        had no API, but published their monthly price changes
+                        freely online, sometimes weeks in advance.
+                    </p>
+                    <p>
+                        This project is open source and you can view the source
+                        code on <a href="https://github.com/twaddington/django-olcc/">GitHub</a>.
+                    </p>
+                    <p>
+                        All price data was obtained directly from the
+                        <a title="Oregon Liquor Control Commission" href="http://www.oregon.gov/OLCC/">OLCC</a>.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Developers</h2>
+                    <p>
+                        Looking for an OLCC API? You're in luck! You can now
+                        access our imported OLCC data via our
+                        <a href="/api/v1/?format=json">REST API</a>.
+                    </p>
+                </section>
             </div>
         </footer>
 
