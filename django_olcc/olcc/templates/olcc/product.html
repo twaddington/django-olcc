@@ -57,18 +57,10 @@
             </span>
         </div>
 
-        <div id="price-chart"></div>
+        <h2>Historical Prices</h2>
+        <!-- TODO: Display full price history! -->
 
-        <table
-            <tbody>
-            {% for p in product.prices.all %}
-                <tr>
-                    <td>{{ p.effective_date|date:"M, Y" }}</td>
-                    <td>{{ p }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div id="price-chart"></div>
 
     </div>
 
@@ -92,7 +84,7 @@
           new google.visualization.LineChart(document.getElementById('price-chart')).
               draw(data,
                 {
-                    title:"Last 12 Months",
+                    title: "Last 12 Months",
                     width: 800,
                     height: 300,
                     vAxis: {
