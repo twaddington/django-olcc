@@ -178,12 +178,10 @@ SENTRY_DSN = \
 OLCC_PRICE_LIST_URL = \
         "http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls"
 
-# Heroku database config
-import dj_database_url
-DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
-
 # Import local settings
 try:
     from settings_local import *
 except ImportError:
-    pass
+    # Heroku database config
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
