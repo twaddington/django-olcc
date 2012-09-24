@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 pass
 
             # Make a HEAD request for the given URL
-            r = requests.head(url, timeout=5)
+            r = requests.get(url, timeout=5, prefetch=False)
 
             # Get the ETag for the resource
             etag = ""
@@ -76,9 +76,6 @@ class Command(BaseCommand):
 
             if should_import or force:
                 self.uprint('Starting import from:\n\t"%s"' % url)
-
-                # Get the updated file
-                r = requests.get(url, timeout=5)
 
                 # Create a temp file
                 fd, path = tempfile.mkstemp()
