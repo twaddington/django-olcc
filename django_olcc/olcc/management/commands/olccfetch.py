@@ -82,7 +82,8 @@ class Command(BaseCommand):
 
                 with os.fdopen(fd, 'wb') as f:
                     # Write to the temp file
-                    f.write(r.content)
+                    for chunk in r.iter_content(chunk_size=10240):
+                        f.write(chunk)
 
                     # Create new import record
                     new_import = ImportRecord()
