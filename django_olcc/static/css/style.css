@@ -210,6 +210,7 @@ td { vertical-align: top; }
    ========================================================================== */
 
 html, body {
+    width: 100%;
     color: #444;
     font-family: "Cabin", Helvetica, Arial, sans-serif;
     background-color: #666;
