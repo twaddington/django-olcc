@@ -232,7 +232,6 @@ html, body {
 }
 
 header {
-    width: 100%;
     position: relative;
     margin: 0;
     padding: 20px;
@@ -306,7 +305,6 @@ footer p {
 }
 
 #content {
-    width: 100%;
     background-color: #fff;
     -moz-box-shadow: 0 4px 8px #222;
     -webkit-box-shadow: 0 4px 8px #222;
