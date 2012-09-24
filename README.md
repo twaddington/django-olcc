@@ -1,5 +1,5 @@
 This project represents a Django site built for the sole
-purpose of displaying [Oregon Liquor Control Commission (OLCC)][olcc]
+purpose of displaying [Oregon Liquor Control Commission (OLCC)][1]
 product, price and store data.
 
 The models are designed to easily import product data directly
@@ -9,7 +9,7 @@ with the original data set.
 The project was born simply because the data existed and was freely
 available.
 
-You can view the live site at [oregonliquorprices.com][project-home].
+You can view the live site at [oregonliquorprices.com][2].
 
 ## OLCC Excel files
 
@@ -28,21 +28,32 @@ submitting a patch.
 Please make sure your editor is configured to use the proper indentation
 style with 4-spaces and no tab characters.
 
+## Getting Started
+
+After cloning the project into your python virtualenv, you'll first need
+to create a basic `settings_local.py` with the following contents:
+
+    DEBUG = True
+    TEMPLATE_DEBUG = True
+
+To run the local development server you should first install the
+[Heroku toolbelt][3]. You should then be able to start up
+the Gunicorn server by running `foreman start` in the `src`
+directory. Make sure you run `$ pip install requirements.txt` in
+your virtualenv first. Alternatively, simply run the following from within
+your virtualenv:
+
+    $ python django_olcc/manage.py run_gunicorn
+
 ## Potential Features
 
+- Find stores by proximity to the visitor's current location.
 - Parse the store hours into a machine readable format. Display stores as
   currently open/closed.
 - Product images: Scrape Creative Commons licensed photos or accept submissions.
 - Price monitoring: Get notified when your favorite item drops in price.
 - Price intelligence: Analyze historical price changes to predict future sales.
 
-## Getting Started
-
-To run the local development server you should first install the
-Heroku command-line tools. You should then be able to start up
-the Gunicorn server by running `foreman start` in the `src`
-directory. Make sure you run `$ pip install requirements.txt` in
-your virtualenv first.
-
-[olcc]: http://www.oregon.gov/OLCC/index.shtml
-[project-home]: http://www.oregonliquorprices.com/
+[1]: http://www.oregon.gov/OLCC/index.shtml
+[2]: http://www.oregonliquorprices.com/
+[3]: https://toolbelt.herokuapp.com/
