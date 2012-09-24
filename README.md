@@ -43,7 +43,15 @@ directory. Make sure you run `$ pip install requirements.txt` in
 your virtualenv first. Alternatively, simply run the following from within
 your virtualenv:
 
-    $ python django_olcc/manage.py run_gunicorn
+    $ python manage.py run_gunicorn
+
+You'll then need to create your local development database by running:
+
+    $ python manage.py syncdb
+
+You can import product data into your database by running:
+
+    $ python manage.py olccfetch
 
 ## Potential Features
 
