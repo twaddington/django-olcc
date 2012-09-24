@@ -1,6 +1,12 @@
 {% extends 'site_base.html' %}
 {% load i18n %}
 
+{% block meta-keywords %}{% endblock %}
+
+{% block meta-description %}
+    {{ product.title }} is {{ product.price }} for the month of {% now "F" %}.
+{% endblock %}
+
 {% block title %}
     {{ product.title }}
 {% endblock %}
@@ -53,7 +59,7 @@
             </table>
 
             <span class="help">
-                This month's price &mdash; with the coming month, over the previous month.
+                {% now "F" %}'s price &mdash; with the coming month, over the previous month.
             </span>
         </div>
 
