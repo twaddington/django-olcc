@@ -231,11 +231,13 @@ html, body {
 }
 
 header {
+    position: relative;
     margin: 0;
     padding: 20px;
     color: #146e24;
     font-size: 125%;
     background-color: #fff;
+    z-index: 2;
 }
 
 nav {
@@ -292,7 +294,6 @@ footer {
     font-weight: normal;
     text-align: center;
     text-shadow: 0 -1px 0 #000;
-    box-shadow: 0 4px 8px #222 inset;
 }
 
 footer p {
@@ -304,6 +305,9 @@ footer p {
 
 #content {
     background-color: #fff;
+    -moz-box-shadow: 0 4px 8px #222;
+    -webkit-box-shadow: 0 4px 8px #222;
+    box-shadow: 0 4px 8px #222;
 }
 
 #content .wrap {
