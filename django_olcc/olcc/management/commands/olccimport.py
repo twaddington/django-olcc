@@ -217,7 +217,7 @@ class Command(BaseCommand):
                 raise CommandError("Import type '%s' not implemented!" % self.import_type)
 
             # Import workbook
-            wb = xlrd.open_workbook(filename)
+            wb = xlrd.open_workbook(filename, on_demand=True)
 
             # Get the first sheet
             sheet = wb.sheet_by_index(0)
