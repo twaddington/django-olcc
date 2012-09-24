@@ -49,7 +49,12 @@ You'll then need to create your local development database by running:
 
     $ python manage.py syncdb
 
-You can import product data into your database by running:
+A development fixture has been provided to get you up and running
+quickly. You can import this fixture by running:
+
+    $ python manage.py loaddata olccdev
+
+You can import fresh product data into your database by running:
 
     $ python manage.py olccfetch
 
