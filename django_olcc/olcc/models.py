@@ -26,6 +26,9 @@ class ImportRecord(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     modified_at = models.DateTimeField(auto_now=True, db_index=True)
 
+    class Meta:
+        get_latest_by = 'created_at'
+
 class ProductManager(models.Manager):
     def on_sale(self):
         """
@@ -160,6 +163,7 @@ class ProductPrice(models.Model):
     class Meta:
         unique_together = ("product", "effective_date")
         ordering = ['-effective_date',]
+        get_latest_by = 'effective_date'
 
     def __unicode__(self):
         return u'$%.2f' % (self.amount,)
