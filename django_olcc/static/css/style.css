@@ -569,8 +569,6 @@ fieldset .errorlist {
 }
 
 #next-price {
-    position: relative;
-    left: 15px;
     padding:  5px 10px;
     border-bottom: 1px solid #dadfe1;
 }
