@@ -203,6 +203,12 @@ td { vertical-align: top; }
    ========================================================================== */
 
 .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
+.chromeframe {
+    margin: 0;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #146E24;
+}
 
 
 /* ==|== primary styles =====================================================
@@ -285,6 +291,14 @@ nav a.active {
 
 #search input:focus {
     opacity: 1;
+}
+
+#site-last-updated {
+    margin: 30px 0 0 0;
+    padding: 0;
+    color: #888;
+    font-size: 85%;
+    text-align: center;
 }
 
 footer {
