@@ -36,12 +36,11 @@ to create a basic `settings_local.py` with the following contents:
     DEBUG = True
     TEMPLATE_DEBUG = True
 
-To run the local development server you should first install the
-[Heroku toolbelt][3]. You should then be able to start up
-the Gunicorn server by running `foreman start` in the `src`
-directory. Make sure you run `$ pip install requirements.txt` in
-your virtualenv first. Alternatively, simply run the following from within
-your virtualenv:
+Active your virtualenv and install the project dependencies:
+
+    $ pip install -r requirements.txt
+
+To start the local development server simply run:
 
     $ python manage.py run_gunicorn
 
