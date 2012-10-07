@@ -63,44 +63,47 @@
             </span>
         </div>
 
-        <h2>Historical Prices</h2>
-        <!-- TODO: Display full price history! -->
+        {% if prices.count > 1 %}
+            <h2>Historical Prices</h2>
+            <!-- TODO: Display full price history! -->
 
-        <div id="price-chart"></div>
-
+            <div id="price-chart"></div>
+        {% endif %}
     </div>
 
-    <!-- Charts -->
-    <script src="https://www.google.com/jsapi"></script>
-    <script>
-        google.load('visualization', '1', {packages: ['corechart']});
-    </script>
+    {% if prices.count > 1 %}
+        <!-- Charts -->
+        <script src="https://www.google.com/jsapi"></script>
+        <script>
+            google.load('visualization', '1', {packages: ['corechart']});
+        </script>
 
-    <script>
-        function drawVisualization() {
-          // Create and populate the data table.
-          var data = google.visualization.arrayToDataTable([
-            ['Month', 'Price'],
-            {% for p in prices reversed %}
-            ['{{p.effective_date|date:'M'}}', {{p.amount}}],
-            {% endfor %}
-          ]);
+        <script>
+            function drawVisualization() {
+              // Create and populate the data table.
+              var data = google.visualization.arrayToDataTable([
+                ['Month', 'Price'],
+                {% for p in prices reversed %}
+                ['{{p.effective_date|date:'M'}}', {{p.amount}}],
+                {% endfor %}
+              ]);
 
-          // Create and draw the visualization.
-          new google.visualization.ColumnChart(document.getElementById('price-chart')).
-              draw(data,
-                {
-                    title: "Last 12 Months",
-                    width: 800,
-                    height: 300,
-                    vAxis: {
-                        title: "Price",
-                        format: "$#.##"
-                    },
-                    hAxis: {title: "Month"}
-                }
-              );
-        }
-        google.setOnLoadCallback(drawVisualization);
-    </script>
+              // Create and draw the visualization.
+              new google.visualization.ColumnChart(document.getElementById('price-chart')).
+                  draw(data,
+                    {
+                        title: "Last 12 Months",
+                        width: 800,
+                        height: 300,
+                        vAxis: {
+                            title: "Price",
+                            format: "$#.##"
+                        },
+                        hAxis: {title: "Month"}
+                    }
+                  );
+            }
+            google.setOnLoadCallback(drawVisualization);
+        </script>
+    {% endif %}
 {% endblock %}
