@@ -9,3 +9,4 @@ raven==1.7.5
 django-tastypie==0.9.11
 beautifulsoup4==4.1.0
 dj-database-url==0.2.1
+django-debug-toolbar==0.9.4
