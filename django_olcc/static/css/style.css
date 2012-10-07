@@ -350,6 +350,12 @@ h2 {
     font-size: 125%;
 }
 
+h2.error {
+    margin: 20px 0;
+    font-size: 800%;
+    text-align: center;
+}
+
 h3 {
     font-size: 115%;
 }
