@@ -11,7 +11,7 @@ def home_view(request):
     The site landing page.
     """
     # Get a random set of on sale products to highlight
-    on_sale = Product.objects.all().order_by('?')[:5]
+    on_sale = Product.objects.on_sale().order_by('?')[:5]
 
     # Get a random set of products to highlight, excluding
     # any on sale items we are already showing.
