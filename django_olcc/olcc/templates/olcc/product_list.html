@@ -49,8 +49,8 @@
 
     <div class="pagination">
         {% if products_page.has_previous %}
-            <a href="{% url products 1 %}">first</a>
-            <a href="{% url products products_page.previous_page_number %}">previous</a>
+            <a href="{% url products 1 %}{% if query %}?q={{ query }}{% endif %}">first</a>
+            <a href="{% url products products_page.previous_page_number %}{% if query %}?q={{ query }}{% endif %}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -58,8 +58,8 @@
         </span>
 
         {% if products_page.has_next %}
-            <a href="{% url products products_page.next_page_number %}">next</a>
-            <a href="{% url products products_page.paginator.num_pages %}">last</a>
+            <a href="{% url products products_page.next_page_number %}{% if query %}?q={{ query }}{% endif %}">next</a>
+            <a href="{% url products products_page.paginator.num_pages %}{% if query %}?q={{ query }}{% endif %}">last</a>
         {% endif %}
     </div>
 {% endblock %}
