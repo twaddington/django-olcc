@@ -195,12 +195,6 @@ class TestFetchCommand(TestCase):
         with open(path, 'r') as f:
             self.assertEqual(f.read(), self.mock_get_response.text)
 
-    def test_quiet(self, mock_get, mock_command):
-        """
-        :todo: Test the quiet flag.
-        """
-        pass
-
 
 class TestImportCommand(TestCase):
     def setUp(self):
@@ -406,9 +400,47 @@ class TestImportCommand(TestCase):
             # Increment the counter
             i += 1
 
-class TestPeriodicCommand:
-    def test_smoke(self):
+class TestPeriodicCommand(TestCase):
+    def setUp(self):
+        # Three products, with this month and last month's price, on sale flag
+        self.products = [
+            Product.objects.create(title='Product 1', code='123', on_sale=True),
+            Product.objects.create(title='Product 2', code='456', on_sale=False),
+            Product.objects.create(title='Product 3', code='789', on_sale=False),
+        ]
+
+        today = datetime.date.today().replace(day=1)
+        try:
+            last_month = today.replace(month=today.month-1, day=1)
+        except ValueError:
+            if today.month == 1:
+                last_month = today.replace(year=today.year-1, month=12, day=1)
+
+        for p in self.products:
+            current_price = '3.49'
+            previous_price = '5.99'
+
+            if p.on_sale:
+                current_price, previous_price = previous_price, current_price
+
+            ProductPrice.objects.create(amount=current_price,
+                    effective_date=today, product=p)
+            ProductPrice.objects.create(amount=previous_price,
+                    effective_date=last_month, product=p)
+
+    def test_on_sale(self):
         """
-        :todo: !!!
+        Verify the correct products are marked as on sale.
         """
-        pass
+        # Sanity check
+        self.assertEqual(1, Product.objects.on_sale().count())
+
+        # Invoke the periodic command
+        call_command('olccperiodic', quiet=True, force=True)
+
+        # Verify that two products are now on sale
+        self.assertEqual(2, Product.objects.on_sale().count())
+
+        # Verify the correct two products are now on sale
+        for p in Product.objects.on_sale():
+            self.assertTrue(p.pk > 0)
