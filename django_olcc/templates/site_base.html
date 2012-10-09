@@ -65,11 +65,13 @@
             <div class="wrap">
                 {% block content %}{% endblock %}
 
-                <p id="site-last-updated">
-                    <span title="{{ last_updated|date:'r' }}">
-                        Prices last updated on {{ last_updated|date:"l, F jS" }}.
-                    </span>
-                </p>
+                {% if last_updated %}
+                    <p id="site-last-updated">
+                        <span title="{{ last_updated|date:'r' }}">
+                            Prices last updated on {{ last_updated|date:"l, F jS" }}.
+                        </span>
+                    </p>
+                {% endif %}
             </div>
         </div>
 
