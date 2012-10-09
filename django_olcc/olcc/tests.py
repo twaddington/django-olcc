@@ -14,21 +14,18 @@ from olcc.management.commands import olccfetch
 
 @patch('olcc.management.commands.olccfetch.call_command')
 @patch.object(requests, 'get')
-@patch.object(requests, 'head')
 class TestFetchCommand(TestCase):
     def setUp(self):
         self.default_url = getattr(settings, 'OLCC_PRICE_LIST_URL')
         self.etags = ('"foo"', '"bar"')
 
         # Configure our Mock HTTP response
-        self.mock_head_response = Mock(requests.Response)
-        self.mock_head_response.headers = {'etag': self.etags[0]}
-
         self.mock_get_response = Mock(requests.Response)
-        self.mock_get_response.text = "baz"
-        self.mock_get_response.content = "baz"
+        self.mock_get_response.headers = {'etag': self.etags[0]}
+        self.mock_get_response.text = "foo\nbar\n"
+        self.mock_get_response.iter_content = Mock(return_value="foo\nbar\n")
 
-    def test_command(self, mock_head, mock_get, mock_command):
+    def test_command(self, mock_get, mock_command):
         """
         Test the command when there is no pre-existing ImportRecord
         records found.
@@ -40,12 +37,6 @@ class TestFetchCommand(TestCase):
         
         # Invoke our management command
         call_command('olccfetch', quiet=True)
-
-        # Ensure our command made a head request to the
-        # default URL.
-        self.assertTrue(mock_head.called)
-        self.assertEqual(mock_head.call_count, 1)
-        self.assertEqual(mock_head.call_args[0][0], self.default_url)
 
         # Ensure our command made a get request to the
         # default URL.
@@ -72,7 +63,7 @@ class TestFetchCommand(TestCase):
         self.assertEqual(pi.count(), 1)
         self.assertEqual(pi[0].url, self.default_url)
 
-    def test_command_etag(self, mock_head, mock_get, mock_command):
+    def test_command_etag(self, mock_get, mock_command):
         """
         Test the command when there is an existing ImportRecord
         record.
@@ -88,8 +79,8 @@ class TestFetchCommand(TestCase):
 
         # Set up our response headers
         etag = self.etags[0]
-        mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'etag': etag})
+        mock_get.return_value = self.mock_get_response
+        mock_get.return_value.headers.update({'etag': etag})
 
         # Create a new ImportRecord record
         pi = ImportRecord()
@@ -102,45 +93,33 @@ class TestFetchCommand(TestCase):
         # and the etag returned from the head request are the same.
         call_command('olccfetch', quiet=True)
 
-        # Ensure our command made a head request to the
-        # default URL.
-        self.assertTrue(mock_head.called)
-        self.assertEqual(mock_head.call_count, 1)
-        self.assertEqual(mock_head.call_args[0][0], self.default_url)
-
-        # Ensure our command *did not* make a get request to the
-        # default URL.
-        self.assertFalse(mock_get.called)
+        # Ensure our command *did not* request the response body.
+        self.assertFalse(mock_get.return_value.iter_content.called)
 
         # Ensure our command *did not* call through to 'olccimport'
         self.assertFalse(mock_command.called)
 
         # Prepare our Mock response object to return a new etag
         etag = self.etags[1]
-        mock_head.reset_mock()
-        mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'etag': etag})
+        mock_get.reset_mock()
+        mock_get.return_value = self.mock_get_response
+        mock_get.return_value.headers.update({'etag': etag})
 
         # Invoke our management command. We should now expect it
         # to run an import and behave opposite to the previous case.
         call_command('olccfetch', quiet=True)
 
-        # Ensure our command made a head request to the
-        # default URL.
-        self.assertTrue(mock_head.called)
-        self.assertEqual(mock_head.call_count, 1)
-        self.assertEqual(mock_head.call_args[0][0], self.default_url)
-
         # Ensure our command made a get request to the
         # default URL.
         self.assertTrue(mock_get.called)
+        self.assertTrue(mock_get.return_value.iter_content.called)
         self.assertEqual(mock_get.call_count, 1)
         self.assertEqual(mock_get.call_args[0][0], self.default_url)
 
         # Verify that our import command was now called
         self.assertTrue(mock_command.called)
 
-    def test_force(self, mock_head, mock_get, mock_command):
+    def test_force(self, mock_get, mock_command):
         """
         Verify that the command will run an import when the force
         flag is set regardless of the etag returned.
@@ -152,8 +131,8 @@ class TestFetchCommand(TestCase):
 
         # Set up our response headers
         etag = self.etags[0]
-        mock_head.return_value = self.mock_head_response
-        mock_head.return_value.headers.update({'etag': etag})
+        mock_get.return_value = self.mock_get_response
+        mock_get.return_value.headers.update({'etag': etag})
 
         # Create a new ImportRecord record
         pi = ImportRecord()
@@ -166,15 +145,13 @@ class TestFetchCommand(TestCase):
         # and the etag returned from the head request are the same.
         call_command('olccfetch', quiet=True, force=False)
 
-        # Ensure our command made a head request to the
-        # default URL.
-        self.assertTrue(mock_head.called)
-        self.assertEqual(mock_head.call_count, 1)
-        self.assertEqual(mock_head.call_args[0][0], self.default_url)
+        # Ensure our command was called but *did not* read the content
+        # of the response, only the headers
+        self.assertTrue(mock_get.called)
+        self.assertTrue(mock_get.call_count, 1)
+        self.assertEqual(mock_get.call_args[0][0], self.default_url)
 
-        # Ensure our command *did not* make a get request to the
-        # default URL.
-        self.assertFalse(mock_get.called)
+        self.assertFalse(mock_get.iter_content.called)
 
         # Ensure our command *did not* call through to 'olccimport'
         self.assertFalse(mock_command.called)
@@ -184,7 +161,7 @@ class TestFetchCommand(TestCase):
         self.assertTrue(mock_get.called)
         self.assertTrue(mock_command.called)
 
-    def test_url(self, mock_head, mock_get, mock_command):
+    def test_url(self, mock_get, mock_command):
         """
         Verify that the command uses the provided URL instead of
         the default.
@@ -197,12 +174,6 @@ class TestFetchCommand(TestCase):
         # Invoke our management command
         url = "http://example.com/"
         call_command('olccfetch', quiet=True, url=url)
-
-        # Ensure our command made a head request to the
-        # default URL.
-        self.assertTrue(mock_head.called)
-        self.assertEqual(mock_head.call_count, 1)
-        self.assertEqual(mock_head.call_args[0][0], url)
 
         # Ensure our command made a get request to the
         # default URL.
@@ -224,7 +195,7 @@ class TestFetchCommand(TestCase):
         with open(path, 'r') as f:
             self.assertEqual(f.read(), self.mock_get_response.text)
 
-    def test_quiet(self, mock_head, mock_get, mock_command):
+    def test_quiet(self, mock_get, mock_command):
         """
         :todo: Test the quiet flag.
         """
@@ -438,5 +409,6 @@ class TestImportCommand(TestCase):
 class TestPeriodicCommand:
     def test_smoke(self):
         """
+        :todo: !!!
         """
         pass
