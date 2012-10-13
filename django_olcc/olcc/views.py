@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator, InvalidPage
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -42,7 +43,8 @@ def product_list_view(request, page=1, sale=False):
     query = request.GET.get('q')
 
     if query:
-        products = products.filter(title__icontains=query)
+        products = products.filter(
+                Q(title__icontains=query) | Q(code__iexact=query))
 
     # Order the product list
     products = products.order_by('title')
