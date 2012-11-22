@@ -55,6 +55,7 @@ class Product(models.Model):
     bottles_per_case = models.PositiveIntegerField(blank=True, default=0)
     proof = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
             default=0)
+    # TODO: This should probably be an integer field instead.
     age = models.DecimalField(blank=True, max_digits=5, decimal_places=2,
             default=0, help_text="Age in years",)
 
