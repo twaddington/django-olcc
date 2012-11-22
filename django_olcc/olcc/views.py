@@ -59,6 +59,7 @@ def product_list_view(request, page=1, sale=False):
         'title': title,
         'products_page': products_page, 
         'query': query,
+        'sale': sale,
     }
 
     return render_to_response('olcc/product_list.html',
