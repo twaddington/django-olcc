@@ -65,7 +65,8 @@ You can import fresh product data into your database by running:
 - Parse the store hours into a machine readable format. Display stores as
   currently open/closed.
 - Product images: Scrape Creative Commons licensed photos or accept submissions.
-- Price monitoring: Get notified when your favorite item drops in price.
+- Price monitoring: Get notified when your favorite item drops in price or is
+  about to go up in price.
 - Price intelligence: Analyze historical price changes to predict future sales.
 
 [1]: http://www.oregon.gov/OLCC/index.shtml
