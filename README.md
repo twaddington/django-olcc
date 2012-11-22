@@ -60,7 +60,9 @@ You can import fresh product data into your database by running:
 ## Potential Features
 
 - Price calculator: Per shot, oz, ml, 2oz bar pour.
-- Collapse product sizes onto a single detail page.
+- Collapse product sizes onto a single detail page. This could potentially be
+  done using the product code, which seem to have a common prefix for product
+  type.
 - Find stores by proximity to the visitor's current location.
 - Parse the store hours into a machine readable format. Display stores as
   currently open/closed.
