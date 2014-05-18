@@ -11,7 +11,7 @@ from geopy import geocoders
 from olcc.models import Product, ProductPrice, Store
 from optparse import make_option
 
-IMPORT_TYPES = ('csv_prices', 'prices', 'price_history', 'stores',)
+IMPORT_TYPES = ('csv_prices', 'csv_price_history', 'prices', 'price_history', 'stores',)
 
 class Command(BaseCommand):
     """
@@ -114,6 +114,40 @@ class Command(BaseCommand):
         Import a list of price and product data from the given CSV reader.
         """
         keys = ['code', 'status', 'title', 'size', 'per_case', 'price', 'price_effective_date']
+
+        count = 0
+        for row in csvreader:
+            if len(row) == 0:
+                continue
+
+            # Strip any leading or trailing whitespace from the row values
+            values = [str(s).strip() for s in row]
+
+            # Map our keys to the row values
+            obj = dict(zip(keys, values))
+
+            # Import our product
+            try:
+                product, created = self.product_from_row(obj)
+
+                if product:
+                    count += 1
+                    self.uprint("[%s]: %s" % (product.code, product.title))
+            except Product.MultipleObjectsReturned:
+                print "Product code '%s' returned multiple results!" % obj['code']
+
+        self.uprint("\nImported '%s' new product records and/or prices!" % count)
+
+        if count < 1:
+            self.uprint("\nDid you specify the correct import type?")
+
+
+    def import_csv_price_history(self, csvreader):
+        """
+        Import a list of product price history data from the given CSV reader.
+        """
+        keys = ['year', 'month', 'code', 'title', 'size', 'age', 'age_unit',
+                'proof', 'per_case', 'price']
 
         count = 0
         for row in csvreader:
@@ -258,7 +292,7 @@ class Command(BaseCommand):
             # Start the import
             self.uprint("Importing '%s' from: \n\t%s" % (self.import_type, filename))
 
-            if 'csv_prices' is self.import_type:
+            if self.import_type in ('csv_prices', 'csv_price_history'):
                 with open(filename, 'rb') as csvfile:
                     import_method(csv.reader(csvfile))
             else:
