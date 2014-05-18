@@ -179,7 +179,7 @@ SENTRY_DSN = \
 
 # OLCC Settings
 OLCC_PRICE_LIST_URL = \
-        "http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls"
+        "http://www.olcc.state.or.us/pdfs/NumericPriceListNextMonth.csv"
 
 # Import local settings
 try:

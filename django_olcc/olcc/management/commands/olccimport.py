@@ -2,6 +2,8 @@ import datetime
 import os
 import time
 import xlrd
+import csv
+import re
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
@@ -9,7 +11,7 @@ from geopy import geocoders
 from olcc.models import Product, ProductPrice, Store
 from optparse import make_option
 
-IMPORT_TYPES = ('prices', 'price_history', 'stores',)
+IMPORT_TYPES = ('csv_prices', 'prices', 'price_history', 'stores',)
 
 class Command(BaseCommand):
     """
@@ -80,7 +82,9 @@ class Command(BaseCommand):
             # Get the effective date for the new product price
             today = datetime.date.today()
 
-            if row.get('year') and row.get('month'):
+            if row.get('price_effective_date'):
+                price_date = datetime.datetime.strptime('5/1/2014', '%m/%d/%Y')
+            elif row.get('year') and row.get('month'):
                 price_date = datetime.date(int(float(row.get('year'))),
                     int(float(row.get('month'))), 1) 
             else:
@@ -95,12 +99,47 @@ class Command(BaseCommand):
 
             # Create the new price record
             try:
-                ProductPrice.objects.create(amount=str(row.get('price')),
+                # Strip any other values from the price like commas
+                price = re.sub('[^0-9\.]', '', row.get('price'))
+
+                ProductPrice.objects.create(amount=str(price),
                         effective_date=price_date, product=product)
             except IntegrityError:
                 pass
 
         return (product, created)
+
+    def import_csv_prices(self, csvreader):
+        """
+        Import a list of price and product data from the given CSV reader.
+        """
+        keys = ['code', 'status', 'title', 'size', 'per_case', 'price', 'price_effective_date']
+
+        count = 0
+        for row in csvreader:
+            if len(row) == 0:
+                continue
+
+            # Strip any leading or trailing whitespace from the row values
+            values = [str(s).strip() for s in row]
+
+            # Map our keys to the row values
+            obj = dict(zip(keys, values))
+
+            # Import our product
+            try:
+                product, created = self.product_from_row(obj)
+
+                if product:
+                    count += 1
+                    self.uprint("[%s]: %s" % (product.code, product.title))
+            except Product.MultipleObjectsReturned:
+                print "Product code '%s' returned multiple results!" % obj['code']
+
+        self.uprint("\nImported '%s' new product records and/or prices!" % count)
+
+        if count < 1:
+            self.uprint("\nDid you specify the correct import type?")
 
     def import_prices(self, sheet):
         """
@@ -216,15 +255,18 @@ class Command(BaseCommand):
             except AttributeError:
                 raise CommandError("Import type '%s' not implemented!" % self.import_type)
 
-            # Import workbook
-            wb = xlrd.open_workbook(filename, on_demand=True)
-
-            # Get the first sheet
-            sheet = wb.sheet_by_index(0)
-
             # Start the import
             self.uprint("Importing '%s' from: \n\t%s" % (self.import_type, filename))
-            import_method(sheet)
+
+            if 'csv_prices' is self.import_type:
+                with open(filename, 'rb') as csvfile:
+                    import_method(csv.reader(csvfile))
+            else:
+                # Import workbook
+                wb = xlrd.open_workbook(filename, on_demand=True)
+
+                # Import the first sheet
+                import_method(wb.sheet_by_index(0))
         except IndexError:
             raise CommandError("You must specify a filename!")
         except IOError, e:

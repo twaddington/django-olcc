@@ -27,7 +27,7 @@ class Command(BaseCommand):
         make_option('--url', action='store', type='string', dest='url',
             help='The URL from where to fetch the file.'),
         make_option('--import-type', choices=IMPORT_TYPES,
-            dest='import_type', default='prices',
+            dest='import_type', default='csv_prices',
             help='One of the following: %s' % (', '.join(IMPORT_TYPES),)),
     )
 
