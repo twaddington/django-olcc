@@ -83,7 +83,8 @@ class Command(BaseCommand):
             today = datetime.date.today()
 
             if row.get('price_effective_date'):
-                price_date = datetime.datetime.strptime('5/1/2014', '%m/%d/%Y')
+                price_date = datetime.datetime.strptime(
+                        row.get('price_effective_date'), '%m/%d/%Y')
             elif row.get('year') and row.get('month'):
                 price_date = datetime.date(int(float(row.get('year'))),
                     int(float(row.get('month'))), 1) 
