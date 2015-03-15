@@ -84,7 +84,7 @@
               var data = google.visualization.arrayToDataTable([
                 ['Month', 'Price'],
                 {% for p in prices reversed %}
-                ['{{p.effective_date|date:'M'}}', {{p.amount}}],
+                ['{{p.effective_date|date:'M-y'}}', {{p.amount}}],
                 {% endfor %}
               ]);
 
