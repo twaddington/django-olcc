@@ -1,7 +1,9 @@
 {% extends 'site_base.html' %}
 {% load i18n %}
 
-{% block meta-keywords %}{% endblock %}
+{% block meta-keywords %}
+    {{ product.title }}, {{ product.size }}
+{% endblock %}
 
 {% block meta-description %}
     {{ product.title }} is {{ product.price }} for the month of {% now "F" %}.
