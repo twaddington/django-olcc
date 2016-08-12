@@ -17,12 +17,6 @@ You can view the live site at [oregonliquorprices.com][2].
 - http://www.olcc.state.or.us/pdfs/NumericPriceListCurrentMonth.csv
 - http://www.olcc.state.or.us/pdfs/PriceHistory_CSV.csv
 
-## OLCC Excel files
-
-- http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Next_Month.xls
-- http://www.olcc.state.or.us/pdfs/Numeric_Price_List_Current.xls
-- http://www.olcc.state.or.us/pdfs/PriceHistory_Excel.xls
-
 ## Contributors
 
 You are encouraged to fork the project and add new functionality. We'd
