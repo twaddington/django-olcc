@@ -210,15 +210,6 @@ class TestImportCommand(TestCase):
             ('8932B', '', 'SENOR RIO REPOSADO TEQUILA', '750 ML', '6 MOS', 80, 6, 65),
         ]
 
-        self.history = [
-            ('2012', '7', '1241B', 'SWEET BABY MOONSHINE', '750 ML', 0, None, 95.00, 12, 25.95),
-            ('2012', '7', '1243B', 'WARSHIP SILVER RUM 125 PRO', '', 0, None, 125.00, 12, 24.95),
-            ('2012', '6', '0103B', 'BALVENIE 14 YR CARIBBEAN C', '', 14, None, 86.00, 6, 69.95),
-            ('2011', '7', '1241B', 'SWEET BABY MOONSHINE', '750 ML', 0, None, 95.00, 12, 15.95),
-            ('2011', '7', '1243B', 'WARSHIP SILVER RUM 125 PRO', '', 0, None, 125.00, 12, 14.95),
-            ('2011', '6', '0103B', 'BALVENIE 14 YR CARIBBEAN C', '', 14, None, 86.00, 6, 39.95),
-        ]
-
     def test_validation(self):
         """
         Verify the command throws the proper exceptions when
@@ -337,62 +328,6 @@ class TestImportCommand(TestCase):
             self.assertEqual(self.prices[i][5], p.proof)
             self.assertEqual(self.prices[i][6], p.bottles_per_case)
             self.assertEqual(p.prices.count(), 1)
-
-            # Verify the price data
-            price = p.prices.all()[0]
-            self.assertEqual(price.effective_date, price_date)
-
-            # Increment the counter
-            i += 1
-
-    @patch.object(xlrd, 'open_workbook')
-    def test_import_price_history(self, mock_open_workbook):
-        """
-        Test a basic price history file import.
-        """
-        # Configure our Mocks
-        sheet_mock = Mock()
-        sheet_mock.nrows = len(self.history)
-        sheet_mock.row_values = Mock(side_effect=self.history)
-
-        wb_mock = Mock(return_value=sheet_mock)
-        wb_mock.sheet_by_index = Mock(return_value=sheet_mock)
-
-        mock_open_workbook.return_value = wb_mock
-
-        # Sanity check
-        self.assertEqual(Product.objects.count(), 0)
-        self.assertEqual(ProductPrice.objects.count(), 0)
-
-        # Call our management command
-        path = 'foo/bar/baz/xml'
-        call_command('olccimport', path, quiet=True, import_type='price_history',)
-
-        # Verify open_workbook was called correctly
-        self.assertTrue(mock_open_workbook.called)
-        self.assertEqual(mock_open_workbook.call_count, 1)
-        self.assertEqual(mock_open_workbook.call_args[0][0], path)
-
-        # Verify the expected number of objects were created
-        products = Product.objects.all().order_by('pk')
-        self.assertEqual(products.count(), len(self.history) / 2)
-
-        prices = ProductPrice.objects.all().order_by('pk')
-        self.assertEqual(prices.count(), len(self.history))
-
-        # Verify the product data
-        i = 0
-        for p in products:
-            self.assertEqual(self.history[i][2], p.code)
-            self.assertEqual(self.history[i][3], p.title.upper())
-            self.assertEqual(self.history[i][4], p.size)
-            self.assertEqual(self.history[i][5], p.age)
-            self.assertEqual(self.history[i][7], p.proof)
-            self.assertEqual(p.prices.count(), 2)
-
-            # Calculate the expected price data
-            price_date = datetime.date(int(self.history[i][0]),
-                    int(self.history[i][1]), 1)
 
             # Verify the price data
             price = p.prices.all()[0]

@@ -11,7 +11,7 @@ from geopy import geocoders
 from olcc.models import Product, ProductPrice, Store
 from optparse import make_option
 
-IMPORT_TYPES = ('csv_prices', 'csv_price_history', 'prices', 'price_history', 'stores',)
+IMPORT_TYPES = ('csv_prices', 'prices', 'stores',)
 
 class Command(BaseCommand):
     """
@@ -60,33 +60,25 @@ class Command(BaseCommand):
                 # Set the product title once and once only
                 product.title = row.get('title')
 
-            if created or not self.import_type == 'price_history':
-                # Update our product
-                if row.get('status'):
-                    product.status = row.get('status')
-                if row.get('size'):
-                    product.size = row.get('size')
-                if row.get('per_case'):
-                    product.bottles_per_case = int(float(row.get('per_case')))
-                if row.get('proof'):
-                    product.proof = row.get('proof')
-                if row.get('age'):
-                    if 'age_unit' in row:
-                        # old format (age + age unit)
-                        if row.get('age_unit') == 'M':
-                            product.age = int(float(row.get('age'))) / 12
-                        else:
-                            product.age = row.get('age')
-                    else:
-                        # new format ('24 YRS')
-                        m = re.search('(\\d+) (YRS?|MOS?)', row.get('age'))
-                        if m.group(2).startswith('MO'):
-                            product.age = int(float(m.group(1))) / 12
-                        elif m.group(2).startswith('YR'):
-                            product.age = m.group(1)
+            # Update our product
+            if row.get('status'):
+                product.status = row.get('status')
+            if row.get('size'):
+                product.size = row.get('size')
+            if row.get('per_case'):
+                product.bottles_per_case = int(float(row.get('per_case')))
+            if row.get('proof'):
+                product.proof = row.get('proof')
+            if row.get('age'):
+                # example values: '14 YRS', '1 YR', '8 MOS'
+                m = re.search('(\\d+) (YRS?|MOS?)', row.get('age'))
+                if m.group(2).startswith('MO'):
+                    product.age = int(float(m.group(1))) / 12
+                elif m.group(2).startswith('YR'):
+                    product.age = m.group(1)
 
-                # Persist our updates
-                product.save()
+            # Persist our updates
+            product.save()
 
             # Get the effective date for the new product price
             today = datetime.date.today()
@@ -152,40 +144,6 @@ class Command(BaseCommand):
         if count < 1:
             self.uprint("\nDid you specify the correct import type?")
 
-
-    def import_csv_price_history(self, csvreader):
-        """
-        Import a list of product price history data from the given CSV reader.
-        """
-        keys = ['year', 'month', 'code', 'title', 'size', 'age', 'age_unit',
-                'proof', 'per_case', 'price']
-
-        count = 0
-        for row in csvreader:
-            if len(row) == 0:
-                continue
-
-            # Strip any leading or trailing whitespace from the row values
-            values = [str(s).strip() for s in row]
-
-            # Map our keys to the row values
-            obj = dict(zip(keys, values))
-
-            # Import our product
-            try:
-                product, created = self.product_from_row(obj)
-
-                if product:
-                    count += 1
-                    self.uprint("[%s]: %s" % (product.code, product.title))
-            except Product.MultipleObjectsReturned:
-                print "Product code '%s' returned multiple results!" % obj['code']
-
-        self.uprint("\nImported '%s' new product records and/or prices!" % count)
-
-        if count < 1:
-            self.uprint("\nDid you specify the correct import type?")
-
     def import_prices(self, sheet):
         """
         Import a list of price and product data from the given
@@ -193,39 +151,6 @@ class Command(BaseCommand):
         """
         keys = ['code', 'status', 'title', 'size', 'age', 'proof', 'per_case',
                 'price', 'price_effective_date']
-
-        count = 0
-        for n in range(sheet.nrows):
-            values = sheet.row_values(n)
-
-            # Strip any leading or trailing whitespace from the row values
-            values = [str(s).strip() for s in values]
-
-            # Map our keys to the row values
-            obj = dict(zip(keys, values))
-
-            # Import our product
-            try:
-                product, created = self.product_from_row(obj)
-
-                if product:
-                    count += 1
-                    self.uprint("[%s]: %s" % (product.code, product.title))
-            except Product.MultipleObjectsReturned:
-                print "Product code '%s' returned multiple results!" % obj['code']
-
-        self.uprint("\nImported '%s' new product records and/or prices!" % count)
-
-        if count < 1:
-            self.uprint("\nDid you specify the correct import type?")
-
-    def import_price_history(self, sheet):
-        """
-        Import a list of product price history data from the given
-        sheet from an Excel workbook.
-        """
-        keys = ['year', 'month', 'code', 'title', 'size', 'age', 'age_unit',
-                'proof', 'per_case', 'price']
 
         count = 0
         for n in range(sheet.nrows):
@@ -304,7 +229,7 @@ class Command(BaseCommand):
             # Start the import
             self.uprint("Importing '%s' from: \n\t%s" % (self.import_type, filename))
 
-            if self.import_type in ('csv_prices', 'csv_price_history'):
+            if self.import_type.startswith('csv'):
                 with open(filename, 'rb') as csvfile:
                     import_method(csv.reader(csvfile))
             else:
