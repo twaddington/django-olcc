@@ -205,9 +205,9 @@ class TestImportCommand(TestCase):
         ]
 
         self.prices = [
-            ('0102B', '@', 'GLENFIDDICH SNOW PHOENIX', '750 ML', 6, 92.95),
-            ('0103B', '', 'BALVENIE 14 YR CARIBBEAN C', '750 ML', 6, 64.95),
-            ('0105B', '', 'DECO COFFEE RUM', '750 ML', 12, 23.95),
+            ('0212H', '@', 'OLD OVERHOLT', '1.75 L', '4 YRS', 80, 6, 41.95),
+            ('4176B', '@', 'COLD TREE GIN', '750 ML', '', 80, 12, 29.95),
+            ('8932B', '', 'SENOR RIO REPOSADO TEQUILA', '750 ML', '6 MOS', 80, 6, 65),
         ]
 
         self.history = [
@@ -334,7 +334,8 @@ class TestImportCommand(TestCase):
             self.assertEqual(self.prices[i][1], p.status)
             self.assertEqual(self.prices[i][2], p.title.upper())
             self.assertEqual(self.prices[i][3], p.size)
-            self.assertEqual(self.prices[i][4], p.bottles_per_case)
+            self.assertEqual(self.prices[i][5], p.proof)
+            self.assertEqual(self.prices[i][6], p.bottles_per_case)
             self.assertEqual(p.prices.count(), 1)
 
             # Verify the price data

@@ -71,10 +71,19 @@ class Command(BaseCommand):
                 if row.get('proof'):
                     product.proof = row.get('proof')
                 if row.get('age'):
-                    if row.get('age_unit') == 'M':
-                        product.age = int(float(row.get('age'))) / 12
+                    if 'age_unit' in row:
+                        # old format (age + age unit)
+                        if row.get('age_unit') == 'M':
+                            product.age = int(float(row.get('age'))) / 12
+                        else:
+                            product.age = row.get('age')
                     else:
-                        product.age = row.get('age')
+                        # new format ('24 YRS')
+                        m = re.search('(\\d+) (YRS?|MOS?)', row.get('age'))
+                        if m.group(2).startswith('MO'):
+                            product.age = int(float(m.group(1))) / 12
+                        elif m.group(2).startswith('YR'):
+                            product.age = m.group(1)
 
                 # Persist our updates
                 product.save()
@@ -114,7 +123,8 @@ class Command(BaseCommand):
         """
         Import a list of price and product data from the given CSV reader.
         """
-        keys = ['code', 'status', 'title', 'size', 'per_case', 'price', 'price_effective_date']
+        keys = ['code', 'status', 'title', 'size', 'age', 'proof', 'per_case',
+                'price', 'price_effective_date']
 
         count = 0
         for row in csvreader:
@@ -181,7 +191,8 @@ class Command(BaseCommand):
         Import a list of price and product data from the given
         sheet from an Excel workbook.
         """
-        keys = ['code', 'status', 'title', 'size', 'per_case', 'price']
+        keys = ['code', 'status', 'title', 'size', 'age', 'proof', 'per_case',
+                'price', 'price_effective_date']
 
         count = 0
         for n in range(sheet.nrows):
