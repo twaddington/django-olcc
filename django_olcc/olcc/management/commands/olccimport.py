@@ -42,9 +42,8 @@ class Command(BaseCommand):
     @transaction.commit_on_success
     def product_from_row(self, row):
         """
-        Import a row of product price data as a new product record. This method
-        can import row data from both a price history file or a numeric price
-        list file.
+        Import a row of product price data as a new product record. The row data
+        should correspond to a numeric price list file.
 
         :param row: A dict of keys mapped to row values.
         :return: A tuple containing a Product instance and a boolean indicating
